@@ -146,15 +146,23 @@ public class SistemaController {
 				plano.setCodigo("1");
 				plano.setNome("A");
 				plano.setAtivo(true);
+				plano.setValor(1200.0);
 				plano.setDescricao("Plano Básico");
 				planoDao.save(plano);
 				plano = new Plano();
 				plano.setCodigo("2");
 				plano.setNome("B");
+				plano.setValor(2000.0);
 				plano.setAtivo(true);
 				plano.setDescricao("Plano Intermediário");
 				planoDao.save(plano);
-				
+				plano = new Plano();
+				plano.setCodigo("3");
+				plano.setNome("C");
+				plano.setValor(2500.0);
+				plano.setAtivo(true);
+				plano.setDescricao("Plano Avançado");
+				planoDao.save(plano);
 			}
 			
 			
@@ -168,36 +176,6 @@ public class SistemaController {
 				usu.setPerfil(perfilDao.buscarAdm().get(0));
 				usuarioDao.save(usu);
 
-				
-				// -- Excluir ---------------------------
-				Usuario prof = new Usuario();
-				prof.setAtivo(true);
-				prof.setMatricula("1");
-				prof.setSenha("adm");
-				prof.setNome("Professor");
-				prof.setPerfil(perfilDao.buscarProfessor().get(0));
-				usuarioDao.save(prof);
-				
-				Treino t = new Treino();
-				t.setAtivo(true);
-				t.setTipoOrdem(0);
-				t.setOrdemDoDia(0);
-				t.setDescricao("Supino Reto");
-				t.setSeries(4);
-				t.setRepeticoes(10);
-				t.setDescanso("30s");
-				t.setultimoTreinoExecutado(0);
-				t.setAluno(usuarioDao.buscarProfessores().get(0));
-				treinoDao.save(t);
-				// -- Excluir
-				
-				
-				
-				
-				
-				
-				
-				
 			}
 			logado = false;
 			String link = "index";
@@ -319,6 +297,16 @@ public class SistemaController {
 						System.out.println("Erro: "+e);
 					}
 					modelAndView.addObject("usuario", us);
+				}
+				if(tabela.equals("planos")) {
+					link = verificaLink("pages/planos");
+					modelAndView = new ModelAndView(link);
+					paginaAtual = "Cadastrar novo Plano";
+					Plano objeto = planoDao.findById(id).get();
+					objeto.setAtivo(false);
+					planoDao.save(objeto);
+					List<Plano> pl = planoDao.buscarTudo();
+					modelAndView.addObject("planos", pl);
 				}
 			}
 			modelAndView.addObject("usuario", usuarioSessao);
@@ -1231,6 +1219,38 @@ public class SistemaController {
 						modelAndView.addObject("treinos", treinos);
 					} catch(Exception e) {}
 				}
+			}
+			return modelAndView; //retorna a variavel
+		}
+		
+		
+		@RequestMapping(value = "/planos", produces = "text/plain;charset=UTF-8", method = {RequestMethod.GET,RequestMethod.POST}) // Pagina de Vendas
+		public ModelAndView planos(String acao, Plano plano) throws SQLException {
+			paginaAtual = "Planos";
+			iconePaginaAtual = "fa fa-user"; //Titulo do menuzinho.
+			String link = verificaLink("pages/planos");
+			itemMenu = link;
+			ModelAndView modelAndView = new ModelAndView(link); //JSP que irá acessar.
+			modelAndView.addObject("usuario", usuarioSessao);
+			modelAndView.addObject("paginaAtual", paginaAtual); 
+			modelAndView.addObject("iconePaginaAtual", iconePaginaAtual);
+			if(logado) {
+				//... Salvando dados.
+				if(acao != null) {
+					Plano p = new Plano();
+					if(acao.equals("atualizar")) {
+						p = planoDao.buscarCodigo(plano.getCodigo()).get(0);
+					}
+					p.setAtivo(true);
+					p.setCodigo(plano.getCodigo());
+					p.setDescricao(plano.getDescricao());
+					p.setNome(plano.getNome());
+					p.setValor(plano.getValor());
+					planoDao.save(p);
+				}
+				atualizarPagina = "/planos";
+				List<Plano> planos = planoDao.buscarTudo();
+				modelAndView.addObject("planos", planos);
 			}
 			return modelAndView; //retorna a variavel
 		}
