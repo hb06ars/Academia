@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 
 @Entity
@@ -19,8 +20,8 @@ public class Avaliacao {
 	@Column
 	private String codigo;
 	
-	@Column
-	private String cliente;
+	@OneToOne
+	private Usuario aluno;
 	
 	@Column
 	private Boolean ativo = true;
@@ -34,15 +35,15 @@ public class Avaliacao {
 	@Column
 	private Date fim;
 	
-	@Column
-	private String avaliador;
+	@OneToOne
+	private Usuario avaliador;
 
 	@Column
 	private Date inicioAvaliacao = new Date();
 	@Column
 	private Date ultimaVisita = new Date();
 	@Column
-	private Double gorduraCoroporal;
+	private Double gorduraCorporal;
 	@Column
 	private Double gorduraTrans;
 	@Column
@@ -79,12 +80,7 @@ public class Avaliacao {
 	public void setAtivo(Boolean ativo) {
 		this.ativo = ativo;
 	}
-	public String getCliente() {
-		return cliente;
-	}
-	public void setCliente(String cliente) {
-		this.cliente = cliente;
-	}
+	
 	public String getObservacoes() {
 		return observacoes;
 	}
@@ -103,12 +99,7 @@ public class Avaliacao {
 	public void setFim(Date fim) {
 		this.fim = fim;
 	}
-	public String getAvaliador() {
-		return avaliador;
-	}
-	public void setAvaliador(String avaliador) {
-		this.avaliador = avaliador;
-	}
+	
 	public Date getInicioAvaliacao() {
 		return inicioAvaliacao;
 	}
@@ -121,11 +112,11 @@ public class Avaliacao {
 	public void setUltimaVisita(Date ultimaVisita) {
 		this.ultimaVisita = ultimaVisita;
 	}
-	public Double getGorduraCoroporal() {
-		return gorduraCoroporal;
+	public Double getGorduraCorporal() {
+		return gorduraCorporal;
 	}
-	public void setGorduraCoroporal(Double gorduraCoroporal) {
-		this.gorduraCoroporal = gorduraCoroporal;
+	public void setGorduraCorporal(Double gorduraCorporal) {
+		this.gorduraCorporal = gorduraCorporal;
 	}
 	public Double getGorduraTrans() {
 		return gorduraTrans;
@@ -174,6 +165,18 @@ public class Avaliacao {
 	}
 	public void setPerna(Double perna) {
 		this.perna = perna;
+	}
+	public Usuario getAluno() {
+		return aluno;
+	}
+	public void setAluno(Usuario aluno) {
+		this.aluno = aluno;
+	}
+	public Usuario getAvaliador() {
+		return avaliador;
+	}
+	public void setAvaliador(Usuario avaliador) {
+		this.avaliador = avaliador;
 	}
 	
 	
