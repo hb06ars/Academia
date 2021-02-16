@@ -49,7 +49,7 @@ function voltar(){
 							<div class="profile-info">
 								<h4 class="name text-weight-semibold">${usuario.nome }</h4>
 								<c:set var = "ultimoDiaExecutado" value = "0"/>
-								<h5 class="role">Treino A</h5>
+								<h5 class="role">Treino ${treinoSelecionado }</h5>
 								<div class="profile-footer">
 									<a href="#">${usuario.perfil.nome }</a>
 								</div>

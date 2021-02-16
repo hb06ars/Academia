@@ -741,7 +741,7 @@ public class SistemaController {
 			modelAndView.addObject("paginaAtual", paginaAtual); 
 			modelAndView.addObject("iconePaginaAtual", iconePaginaAtual);
 			if(logado) {
-				System.out.println("proximo: "+proximo+" / anterior: "+anterior);
+				String treinoSelecionado = "A";
 				if(proximo != null && proximo > 0) {
 					Integer maiorTreino = 0;
 					try { maiorTreino =  treinoDao.maiorTreino(usuarioSessao.getMatricula()); } catch(Exception e) {}
@@ -766,8 +766,20 @@ public class SistemaController {
 						treinoDao.save(tr);
 					}
 				}
-				System.out.println("usuarioSessao.getMatricula(): "+usuarioSessao.getMatricula());
+
 				List<Treino> treinos = treinoDao.buscarMatricula(usuarioSessao.getMatricula());
+				switch (treinos.get(0).getultimoTreinoExecutado()) {
+					case 0: treinoSelecionado = "A"; break;
+					case 1: treinoSelecionado = "B"; break;
+					case 2: treinoSelecionado = "C"; break;
+					case 3: treinoSelecionado = "D"; break;
+					case 4: treinoSelecionado = "E"; break;
+					case 5: treinoSelecionado = "F"; break;
+					case 6: treinoSelecionado = "G"; break;
+					default:
+						break;
+				}
+				modelAndView.addObject("treinoSelecionado", treinoSelecionado);
 				modelAndView.addObject("treinos", treinos);
 			}
 			return modelAndView; //retorna a variavel
