@@ -768,17 +768,20 @@ public class SistemaController {
 				}
 
 				List<Treino> treinos = treinoDao.buscarMatricula(usuarioSessao.getMatricula());
-				switch (treinos.get(0).getultimoTreinoExecutado()) {
-					case 0: treinoSelecionado = "A"; break;
-					case 1: treinoSelecionado = "B"; break;
-					case 2: treinoSelecionado = "C"; break;
-					case 3: treinoSelecionado = "D"; break;
-					case 4: treinoSelecionado = "E"; break;
-					case 5: treinoSelecionado = "F"; break;
-					case 6: treinoSelecionado = "G"; break;
-					default:
-						break;
+				if(treinos.size() > 0) {
+					switch (treinos.get(0).getultimoTreinoExecutado()) {
+						case 0: treinoSelecionado = "A"; break;
+						case 1: treinoSelecionado = "B"; break;
+						case 2: treinoSelecionado = "C"; break;
+						case 3: treinoSelecionado = "D"; break;
+						case 4: treinoSelecionado = "E"; break;
+						case 5: treinoSelecionado = "F"; break;
+						case 6: treinoSelecionado = "G"; break;
+						default:
+							break;
+					}
 				}
+				
 				modelAndView.addObject("treinoSelecionado", treinoSelecionado);
 				modelAndView.addObject("treinos", treinos);
 			}

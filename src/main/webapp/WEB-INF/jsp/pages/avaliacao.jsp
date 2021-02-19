@@ -15,13 +15,25 @@
 <!-- DOWNLOAD EXCEL -->
 
 <section class="panel">
-							<header class="panel-heading">
+							<header class="panel-heading bg-primary">
 								<div class="panel-actions">
 									<a href="#" class="panel-action panel-action-toggle" data-panel-toggle></a>
 									<a href="#" class="panel-action panel-action-dismiss" data-panel-dismiss></a>
 								</div>
-						
-								<h2 class="panel-title">Avaliação</h2>
+								
+								<div class="widget-profile-info">
+									<div class="profile-picture">
+										<img src="${usuario.pathImagem }">
+									</div>
+									<div class="profile-info">
+										<h4 class="name text-weight-semibold">${usuario.nome }</h4>
+										<c:set var = "ultimoDiaExecutado" value = "0"/>
+										<h5 class="role">Avaliação</h5>
+										<div class="profile-footer">
+											<a href="#">${usuario.perfil.nome }</a>
+										</div>
+									</div>
+								</div>
 							</header>
 							<div class="panel-body">
 								<table class="table table-bordered table-striped mb-none" id="datatable-default" style="overflow:auto">

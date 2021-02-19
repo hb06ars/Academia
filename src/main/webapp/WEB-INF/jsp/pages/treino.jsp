@@ -75,13 +75,18 @@ function voltar(){
 											<div class="form-group">
 												<div class="col-sm-12">
 													<div class="input-group mb-md">
-														<div class="input-group-btn">
-															<input type="hidden" name="proximo" id="proximo" value="0"/>
-															<button class="btn btn-primary" onclick="voltar()" tabindex="-1">Anterior</button>
-															<a style="cursor:default" class="btn" tabindex="-1">&nbsp</a>
-															<input type="hidden" name="anterior" id="anterior" value="0"/>
-															<button class="btn btn-primary" onclick="pular()" tabindex="-1">Próximo</button>
-														</div>
+														<c:if test="${treinos.size() > 0}">
+															<div class="input-group-btn">
+																<input type="hidden" name="proximo" id="proximo" value="0"/>
+																<button class="btn btn-primary" onclick="voltar()" tabindex="-1">Anterior</button>
+																<a style="cursor:default" class="btn" tabindex="-1">&nbsp</a>
+																<input type="hidden" name="anterior" id="anterior" value="0"/>
+																<button class="btn btn-primary" onclick="pular()" tabindex="-1">Próximo</button>
+															</div>
+														</c:if>
+														<c:if test="${treinos.size() == 0}">
+															${usuario.nome}, você não possui nenhum treino cadastrado.<br>Solicite ao seu instrutor que cadastre o seu treino.
+														</c:if>
 													</div>
 												</div>
 											</div>
