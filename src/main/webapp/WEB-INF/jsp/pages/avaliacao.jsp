@@ -142,8 +142,8 @@ function drawBasic() {
 
 
 <section class="panel">
-	<div class="panel-body" >
-		  <div id="chart_div" style="width: 1000px; height: 1000px;" style="overflow:auto"></div>
+	<div class="panel-body" style="overflow:auto">
+		  <div id="chart_div" style="width: 1000px; height: 1000px;"></div>
 	</div>
 </section>
 						
