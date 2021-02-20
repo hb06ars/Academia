@@ -16,6 +16,39 @@
 
 
 <!-- start: page -->
+<c:if test="${usuario.perfil.admin }">
+	<div class="row">
+	<form action="/pendencias" method="post" accept-charset="utf-8">
+		<div class="col-md-12">
+			<div data-collapsed="0" class="panel">
+				<div class="panel-heading">
+					<div class="panel-title">
+						<div class="panel-actions">
+							<a href="#" class="panel-action panel-action-toggle" data-panel-toggle></a>
+							<a href="#" class="panel-action panel-action-dismiss" data-panel-dismiss></a>
+						</div>
+						<h2 class="panel-title" id="">Pesquisar por usuário </h2>
+					</div>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-md-2 form-group">
+							<input type="text" placeholder="CPF" name="cpf" id="cpf" class="form-control" required>
+						</div>
+						<div class="col-md-2 form-group" id="pesq">
+							<input type="submit" class="btn btn-primary"  value="Pesquisar">
+						</div>
+						<input type="hidden" id="acao" name="acao" value="pesquisar">
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+	</div>
+</c:if>
+
+
+
 <section class="panel">
 							<header class="panel-heading">
 								<div class="panel-actions">
@@ -29,7 +62,9 @@
 								<table class="table table-bordered table-striped mb-none" id="datatable-default" style="overflow:auto">
 									<thead>
 										<tr>
-											<th>Retirar</th>
+											<c:if test="${usuario.perfil.admin }">
+												<th>Retirar</th>
+											</c:if>
 											<th>Matrícula</th>
 											<th>Situação</th>
 											<th>Ativo</th>
@@ -50,7 +85,9 @@
 									<tbody>
 										<c:forEach items="${pendencias }" var="p">
 											<tr class="gradeX">
-												<td><i class="fa fa-trash" onclick="modalDeletar('parcela', ${p.id}) "></i></td>
+												<c:if test="${usuario.perfil.admin }">
+													<td><i class="fa fa-trash" onclick="modalDeletar('parcela', ${p.id}) "></i></td>
+												</c:if>
 												<td>${p.contrato.cliente.matricula }</td>
 												<td style="color:red"> Pendente </td>
 												<c:if test="${p.contrato.cliente.ativo == false}">

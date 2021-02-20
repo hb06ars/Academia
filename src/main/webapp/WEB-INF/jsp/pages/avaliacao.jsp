@@ -14,6 +14,74 @@
 <jsp:include page="includes/jquery/excel/downloadExcel.jsp" />
 <!-- DOWNLOAD EXCEL -->
 
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+
+google.charts.load('current', {packages: ['corechart', 'bar']});
+google.charts.setOnLoadCallback(drawBasic);
+
+function drawBasic() {
+
+	 var data = google.visualization.arrayToDataTable([
+	        ['Descrição', 'Total', 'Meta'],
+			<c:forEach items='${avaliacao }' var='a'>
+				['Peso', ${a.peso },${a.limite_peso }],
+				['Tríceps', ${a.triceps },${a.limite_triceps }],
+				['Abdômen Cutânea', ${a.abdomenDobra },${a.limite_abdomenDobra }],
+				['Braço direito', ${a.bracoDir },${a.limite_bracoDir }],
+				['Braço esquerdo', ${a.bracoEsq },${a.limite_bracoEsq }],
+				['Anti Braço direito', ${a.antiBracoDir },${a.limite_antiBracoDir }],
+				['Anti Braço esquerdo', ${a.antiBracoEsq },${a.limite_antiBracoEsq }],
+				['Abdômen Circunferência', ${a.abdomenCirc },${a.limite_abdomenCirc }],
+				['Quadril', ${a.quadril },${a.limite_quadril }],
+				['Cintura', ${a.cintura },${a.limite_cintura }],
+				['Coxa direita', ${a.coxaDir },${a.limite_coxaDir }],
+				['Coxa esquerda', ${a.coxaEsq },${a.limite_coxaEsq }],
+				['Perna direita', ${a.pernaDir },${a.limite_pernaDir }],
+				['Perna esquerda', ${a.pernaEsq },${a.limite_pernaEsq }],
+				['Rádio', ${a.radio },${a.limite_radio }],
+				['Fêmur', ${a.femur },${a.limite_femur }],
+				['Gordura Corporal', ${a.gorduraCorporal },${a.limite_gorduraCorporal }],
+				['Massa Magra', ${a.massaMagra },${a.limite_massaMagra }],
+				['Massa Gorda', ${a.massaGorda },${a.limite_massaGorda }],
+				['Massa Muscular', ${a.massaMuscular },${a.limite_massaMuscular }],
+				['Massa Óssea', ${a.massaOssea },${a.limite_massaOssea }],
+				['Massa Residual', ${a.massaResidual },${a.limite_massaResidual }],
+				['ICQ', ${a.icq },${a.limite_icq }],
+				['IMC', ${a.imc },${a.limite_imc }]
+			</c:forEach>
+      ]);
+
+      var options = {
+        title: 'AVALIAÇÃO FÍSICA',
+        chartArea: {width: '50%'},
+        hAxis: {
+          title: '',
+          minValue: 0
+        },
+        vAxis: {
+          title: ''
+        }
+      };
+
+      var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+
+      chart.draw(data, options);
+    }
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
 <section class="panel">
 							<header class="panel-heading bg-primary">
 								<div class="panel-actions">
@@ -72,6 +140,17 @@
 
 
 
+
+<section class="panel">
+	<div class="panel-body" >
+		  <div id="chart_div" style="width: 1000px; height: 1000px;" style="overflow:auto"></div>
+	</div>
+</section>
+						
+
+
+
+
 <!-- end: page -->
 	</section>
 </div>
@@ -88,5 +167,6 @@
 <!-- MAIN NO HEADER -->
 </main>
 <!-- HEADER -->
+<script src="assets/javascripts/ui-elements/examples.charts.js"></script>
 <jsp:include page="includes/footer.jsp" />
 <!-- HEADER -->

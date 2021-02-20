@@ -790,8 +790,12 @@ public class SistemaController {
 		
 		
 		@RequestMapping(value = "/alunos", produces = "text/plain;charset=UTF-8", method = {RequestMethod.GET,RequestMethod.POST}) // Pagina de Vendas
-		public ModelAndView alunos(Usuario aluno, String acao, String contrato_obs, Integer contrato_vencimento, String contrato_inicio, String contrato_fim, Double contrato_totalContrato, Double contrato_sinal, Double contrato_desconto, Double contrato_total, Integer contrato_parcelas, Double contrato_valorDaParcela) throws SQLException, ParseException {
-			System.out.println("acao: "+acao);
+		public ModelAndView alunos(Usuario aluno, String acao, String contrato_obs, Integer contrato_vencimento, String contrato_inicio, String contrato_fim, String contrato_totalContrato, Double contrato_sinal, Double contrato_desconto, Double contrato_total, Integer contrato_parcelas, Double contrato_valorDaParcela) throws SQLException, ParseException {
+			Double vlrContrato_totalContrato = 0.0;
+			if(contrato_totalContrato != null) {
+				vlrContrato_totalContrato = Double.parseDouble(contrato_totalContrato);
+			}
+			System.out.println("vlrContrato_totalContrato: "+vlrContrato_totalContrato);
 			paginaAtual = "Alunos";
 			iconePaginaAtual = "fa fa-user"; //Titulo do menuzinho.
 			String link = verificaLink("pages/alunos");
@@ -838,7 +842,7 @@ public class SistemaController {
 						c.setNome(aluno.getMatricula());
 						c.setObservacoes(contrato_obs);
 						c.setValor(contrato_total);
-						c.setValorBruto(contrato_totalContrato);
+						c.setValorBruto(vlrContrato_totalContrato);
 						c.setSinal(contrato_sinal);
 						c.setDesconto(contrato_desconto);
 						c.setValor(contrato_total);
@@ -920,7 +924,7 @@ public class SistemaController {
 						c.setNome(aluno.getMatricula());
 						c.setObservacoes(contrato_obs);
 						c.setValor(contrato_total);
-						c.setValorBruto(contrato_totalContrato);
+						c.setValorBruto(vlrContrato_totalContrato);
 						c.setSinal(contrato_sinal);
 						c.setDesconto(contrato_desconto);
 						c.setValor(contrato_total);
@@ -1077,7 +1081,7 @@ public class SistemaController {
 		
 		
 		@RequestMapping(value = "/pendencias", produces = "text/plain;charset=UTF-8", method = {RequestMethod.GET,RequestMethod.POST}) // Pagina de Vendas
-		public ModelAndView pendencias() throws SQLException {
+		public ModelAndView pendencias(String acao, String cpf) throws SQLException {
 			paginaAtual = "Pendências";
 			iconePaginaAtual = "fa fa-money"; //Titulo do menuzinho.
 			String link = verificaLink("pages/pendencias");
@@ -1087,9 +1091,21 @@ public class SistemaController {
 			modelAndView.addObject("paginaAtual", paginaAtual); 
 			modelAndView.addObject("iconePaginaAtual", iconePaginaAtual);
 			if(logado) {
-				List<Parcela> pendencias = parcelaDao.buscarPendencias();
-				modelAndView.addObject("pendencias", pendencias);
-				
+				if(usuarioSessao.getPerfil().getAdmin()) {
+					if(acao == null) {
+						List<Parcela> pendencias = parcelaDao.buscarPendencias();
+						modelAndView.addObject("pendencias", pendencias);
+					} else {
+						if(acao.equals("pesquisar")) {
+							List<Parcela> pendencias = parcelaDao.buscarMatricula(cpf);
+							modelAndView.addObject("pendencias", pendencias);
+						}
+					}
+				} else {
+					List<Parcela> pendencias = parcelaDao.buscarMatricula(usuarioSessao.getCpf());
+					modelAndView.addObject("pendencias", pendencias);
+				}
+				modelAndView.addObject("usuario", usuarioSessao);
 			}
 			return modelAndView; //retorna a variavel
 		}
@@ -1424,22 +1440,73 @@ public class SistemaController {
 						if(acao == 2) {
 							a = avaliacaoDao.buscarMatricula(matricula).get(0);
 						}
-						a.setAbdominal(av.getAbdominal());
 						a.setCodigo(matricula);
 						a.setInicio(inicio_av);
 						a.setFim(fim_av);
-						a.setAltura(av.getAltura());
 						a.setAluno(usuarioDao.buscarMatricula(matricula));
 						a.setAtivo(true);
 						a.setAvaliador(av.getAvaliador());
-						a.setPerna(av.getPerna());
-						a.setPeso(av.getPeso());
-						a.setTriceps(av.getTriceps());
-						a.setBiceps(av.getBiceps());
-						a.setCostas(av.getCostas());
 						a.setObservacoes(av.getObservacoes());
+						
+						a.setIdade(av.getIdade());
+						a.setPeso(av.getPeso());
+						a.setAltura(av.getAltura());
+						a.setTriceps(av.getTriceps());
+						a.setAbdomenDobra(av.getAbdomenDobra());
+						a.setBracoDir(av.getBracoDir());
+						a.setBracoEsq(av.getBracoEsq());
+						a.setAntiBracoDir(av.getAntiBracoDir());
+						a.setAntiBracoEsq(av.getAntiBracoEsq());
+						a.setAbdomenCirc(av.getAbdomenCirc());
+						a.setQuadril(av.getQuadril());
+						a.setCintura(av.getCintura());
+						a.setCoxaDir(av.getCoxaDir());
+						a.setCoxaEsq(av.getCoxaEsq());
+						a.setPernaDir(av.getPernaDir());
+						a.setPernaEsq(av.getPernaEsq());
+						a.setRadio(av.getRadio());
+						a.setFemur(av.getFemur());
 						a.setGorduraCorporal(av.getGorduraCorporal());
-						a.setGorduraTrans(av.getGorduraTrans());
+						a.setClassificacao(av.getClassificacao());
+						a.setMassaMagra(av.getMassaMagra());
+						a.setMassaGorda(av.getMassaGorda());
+						a.setMassaMuscular(av.getMassaMuscular());
+						a.setMassaOssea(av.getMassaOssea());
+						a.setMassaResidual(av.getMassaResidual());
+						a.setIcq(av.getIcq());
+						a.setImc(av.getImc());
+						a.setClassificacaoIMC(av.getClassificacaoIMC());
+						a.setClassificacaoICQ(av.getClassificacaoICQ());
+						
+						
+						a.setLimite_peso(av.getLimite_peso());
+						a.setLimite_altura(av.getLimite_altura());
+						a.setLimite_triceps(av.getLimite_triceps());
+						a.setLimite_abdomenDobra(av.getLimite_abdomenDobra());
+						a.setLimite_bracoDir(av.getLimite_bracoDir());
+						a.setLimite_bracoEsq(av.getLimite_bracoEsq());
+						a.setLimite_antiBracoDir(av.getLimite_antiBracoDir());
+						a.setLimite_antiBracoEsq(av.getLimite_antiBracoEsq());
+						a.setLimite_abdomenCirc(av.getLimite_abdomenCirc());
+						a.setLimite_quadril(av.getLimite_quadril());
+						a.setLimite_cintura(av.getLimite_cintura());
+						a.setLimite_coxaDir(av.getLimite_coxaDir());
+						a.setLimite_coxaEsq(av.getLimite_coxaEsq());
+						a.setLimite_pernaDir(av.getLimite_pernaDir());
+						a.setLimite_pernaEsq(av.getLimite_pernaEsq());
+						a.setLimite_radio(av.getLimite_radio());
+						a.setLimite_femur(av.getLimite_femur());
+						a.setLimite_gorduraCorporal(av.getLimite_gorduraCorporal());
+						a.setLimite_massaMagra(av.getLimite_massaMagra());
+						a.setLimite_massaGorda(av.getLimite_massaGorda());
+						a.setLimite_massaMuscular(av.getLimite_massaMuscular());
+						a.setLimite_massaOssea(av.getLimite_massaOssea());
+						a.setLimite_massaResidual(av.getLimite_massaResidual());
+						a.setLimite_icq(av.getLimite_icq());
+						a.setLimite_imc(av.getLimite_imc());
+						
+						
+						
 						a.setAvaliador(usuarioSessao);
 						avaliacaoDao.save(a);
 						List<Avaliacao> avaliacao = avaliacaoDao.buscarMatricula(matricula);

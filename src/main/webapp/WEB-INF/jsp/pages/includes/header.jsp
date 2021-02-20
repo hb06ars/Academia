@@ -122,6 +122,12 @@
 											<span>Minha Avaliação</span>
 										</a>
 									</li>
+									<li>
+										<a href="/pendencias">
+											<i class="fa fa-credit-card" aria-hidden="true"></i>
+											<span>Pendências</span>
+										</a>
+									</li>
 									<c:if test="${usuario.perfil.professor == true}">
 										<li>
 											<a href="/cadastrarTreinos">
@@ -167,9 +173,6 @@
 												</li>
 												<li>
 													<a href="/planos">Planos</a>
-												</li>
-												<li>
-													<a href="/pendencias">Pendências</a>
 												</li>
 												<li>
 													<a href="/aniversariantes">Aniversariantes</a>

@@ -17,6 +17,95 @@
 
 <script>
 
+function verContrato(){
+	var data = new Date(),
+    dia  = data.getDate().toString(),
+    diaF = (dia.length == 1) ? '0'+dia : dia,
+    mes  = (data.getMonth()+1).toString(), //+1 pois no getMonth Janeiro começa com zero.
+    mesF = (mes.length == 1) ? '0'+mes : mes,
+    anoF = data.getFullYear(),
+	valor = diaF+"/"+mesF+"/"+anoF;
+    var dataVal = valor;
+	var arr = dataVal.split("/").reverse();
+	var teste = new Date(arr[0], arr[1] - 1, arr[2]);
+	var dia = teste.getDay();
+    valor = valor;
+    document.getElementById("dataHojeContrato").innerHTML = 'Data:  '+valor;
+    
+	matricula = document.getElementById("matricula").value;
+	var inicio = 'x';
+	var fim = 'x';
+	<c:forEach items="${usuarios }" var="u" varStatus="s">
+		if(${u.matricula} == matricula){
+			document.getElementById("co_matricula").innerHTML = '${u.matricula}';
+			document.getElementById("co_nome").innerHTML = '${u.nome}';
+			document.getElementById("co_nomeCliente").innerHTML = '${u.nome}';
+			document.getElementById("co_cpf").innerHTML = '${u.cpf}';
+			var nasc = '${u.dataNascimento}';
+			nasc = nasc.substr(8,10)+'/'+nasc.substr(5,2)+'/'+nasc.substr(0,4);
+			document.getElementById("co_nasc").innerHTML = nasc ;
+			document.getElementById("co_tel").innerHTML = '${u.telefone}';
+			document.getElementById("co_cel").innerHTML = '${u.celular}';
+			document.getElementById("co_email").innerHTML = '${u.email}';
+			document.getElementById("co_endereco").innerHTML = '${u.endereco}';
+			document.getElementById("co_bairro").innerHTML = '${u.bairro}';
+			document.getElementById("co_cidade").innerHTML = '${u.cidade}';
+			document.getElementById("co_estado").innerHTML = '${u.estado}';
+			document.getElementById("co_cep").innerHTML = '${u.cep}';
+			document.getElementById("co_plano").innerHTML = '${u.plano.nome}';
+			<c:forEach items="${u.contrato }" var="c">
+				<c:if test="${c.ativo == true}">
+					document.getElementById("co_totalContrato").innerHTML = 'R$'+'${c.valorBruto}';
+					document.getElementById("co_obs").innerHTML = '${c.observacoes}';
+					document.getElementById("co_total").innerHTML = '<b>R$</b>'+'<b>${c.valor}</b>';
+					document.getElementById("co_sinal").innerHTML = 'R$'+'${c.sinal}';
+					document.getElementById("co_desconto").innerHTML = 'R$'+'${c.desconto}';
+					document.getElementById("co_valorDaParcela").innerHTML = 'R$'+'${c.valorDaParcela}';
+					document.getElementById("co_vencimento").innerHTML = '${c.vencimento}';
+					document.getElementById("co_parcelas").innerHTML = '${c.parcelas}x';
+					inicio = '${c.inicio}'.replace('00:00:00','').replace('.0','').replace(' ','')
+					fim = '${c.fim}'.replace('00:00:00','').replace('.0','').replace(' ','')
+					inicio = inicio.substr(8,10)+'/'+inicio.substr(5,2)+'/'+inicio.substr(0,4);
+					fim = fim.substr(8,10)+'/'+fim.substr(5,2)+'/'+fim.substr(0,4);
+					document.getElementById("co_inicio").innerHTML = inicio;
+					document.getElementById("co_fim").innerHTML = fim;
+	
+					document.getElementById("co_inicio").disabled = true;
+					document.getElementById("co_fim").disabled = true;
+					document.getElementById("co_totalContrato").disabled = true;
+					document.getElementById("co_sinal").disabled = true;
+					document.getElementById("co_desconto").disabled = true;
+					document.getElementById("co_total").disabled = true;
+					document.getElementById("co_parcelas").disabled = true;
+					document.getElementById("co_vencimento").disabled = true;
+					document.getElementById("co_valorDaParcela").disabled = true;
+					document.getElementById("co_obs").disabled = true;
+				</c:if>
+			</c:forEach>
+		}
+	</c:forEach>
+	var minhaTabela = document.getElementById('tabelaContrato').innerHTML;
+    var win = window.open('', '', 'height=700,width=700');
+
+    var style = "<style>";
+    style = style + "table {width: 100%;font: 20px Calibri;}";
+    style = style + "table, th, td {border: solid 1px #DDD; border-collapse: collapse;";
+    style = style + "padding: 2px 3px;text-align: left;}";
+    style = style + "</style>";
+    win.document.write('<html><head>');
+    win.document.write('<title>Empregados</title>');
+    win.document.write(style);
+    win.document.write('</head>');
+    win.document.write('<body>');
+    win.document.write(minhaTabela);
+    win.document.write('</body></html>');
+    win.document.close();
+    win.print();         
+
+}
+
+
+
 function fMasc(objeto,mascara) {
 	obj=objeto
 	masc=mascara
@@ -123,6 +212,7 @@ function cancelar(){
 
 	document.getElementById("acao").value = '';
 	document.getElementById("atualizar").style.display = "none";
+	document.getElementById("contrato").style.display = "none";
 	document.getElementById("salvar").style.display = "block";
 	document.getElementById("cancelar").style.display = "none";
 }
@@ -130,6 +220,7 @@ function cancelar(){
 function editar(id){
 	document.getElementById("acao").value = 'atualizar';
 	document.getElementById("atualizar").style.display = "block";
+	document.getElementById("contrato").style.display = "block";
 	document.getElementById("salvar").style.display = "none";
 	document.getElementById("cancelar").style.display = "block";
 	
@@ -211,6 +302,106 @@ function editar(id){
 
 
 </script>
+
+
+
+
+
+
+
+
+<div id="tabelaContrato" style="display:none;">
+<table border="1"> 
+            <tr>
+                <th colspan="6"><b>CONTRATO ACADEMIA</b><br></br></th>
+            </tr>
+            <tr>
+                <td colspan="6">&nbsp</td>
+            </tr>
+            <tr>
+                <td colspan="6"><b>Cliente</b> </td>
+            </tr>
+            <tr>
+                <td>Matrícula: </td><td colspan="2" id="co_matricula">-</td>
+                <td>CPF: </td><td colspan="2" id="co_cpf">-</td>
+            </tr>
+            <tr>
+                <td>Nome: </td><td colspan="2" id="co_nome">-</td>
+                <td>Nasc: </td><td colspan="2" id="co_nasc">-</td>
+            </tr>
+            <tr>
+                <td>Tel: </td><td colspan="2" id="co_tel">-</td>
+                <td>Cel: </td><td colspan="2" id="co_cel">-</td>
+            </tr>
+            <tr>
+                <td>Email: </td><td colspan="5" id="co_email">-</td>
+            </tr>
+            <tr>
+                <td>Endereço: </td><td colspan="2" id="co_endereco">-</td>
+                <td>Bairro: </td><td colspan="2" id="co_bairro">-</td>
+            </tr>
+            <tr>
+                <td>Cidade: </td><td colspan="2" id="co_cidade">-</td>
+                <td>Estado: </td><td colspan="2" id="co_estado">-</td>
+            </tr>
+            <tr>
+                <td>CEP: </td><td colspan="5" id="co_cep">-</td>
+            </tr>
+            <tr>
+                <td colspan="6">&nbsp</td>
+            </tr>
+            <tr>
+                <td colspan="6"><b>Contrato</b> </td>
+            </tr>
+            <tr>
+                <td>Plano: </td><td colspan="5" id="co_plano">-</td>
+            </tr>
+            <tr>
+                <td>Obs: </td><td colspan="5" id="co_obs">-</td>
+            </tr>
+            <tr>
+                <td>Início Contrato: </td><td colspan="2" id="co_inicio">-</td>
+                <td>Fim Contrato: </td><td colspan="2" id="co_fim">-</td>
+            </tr>
+            <tr>
+                <td>Total Contrato: </td><td colspan="5" id="co_totalContrato">-</td>
+            </tr>
+            <tr>
+                <td>Sinal: </td><td colspan="2" style="color:red" id="co_sinal">-</td>
+                <td>Desconto: </td><td colspan="2" style="color:red" id="co_desconto">-</td>
+            </tr>
+            <tr>
+                <td><b>Total a Pagar: </b></td><td colspan="5" id="co_total"><b>-</b></td>
+            </tr>
+            <tr>
+                <td colspan="6">&nbsp</td>
+            </tr>
+             <tr>
+                <td colspan="6"><b>Formas de Pagamento</b> </td>
+            </tr>
+            <tr>
+                <td>Parcelas: </td><td id="co_parcelas">-</td>
+                <td>Vencimento dia: </td><td id="co_vencimento">-</td>
+                <td>Valor da Parcela: </td><td id="co_valorDaParcela">-</td>
+            </tr>
+            <tr>
+                <td colspan="6">&nbsp</td>
+            </tr>
+             <tr>
+                <td colspan="6"><b>Assinatura</b> </td>
+            </tr>
+            <tr>
+                <td ><br><br>______________________________________ <br> <div  id="co_nomeCliente" align="center">-</div></td>
+                <td colspan="4">&nbsp</td>
+                 <td><br><br>______________________________________ <br> <div align="center">${usuario.nome}</div></td>
+            </tr>
+            <tr>
+                <td colspan="6"><div id="dataHojeContrato" align="center"></div> </td>
+            </tr>
+            
+            <tr>
+        </table>
+</div>
 
 
 
@@ -326,7 +517,7 @@ function editar(id){
 							<span class="input-group-addon">
 								Total do Contrato
 							</span>
-							<input type="text" name="contrato_totalContrato" id="contrato_totalContrato" onkeyup="calcular()" value="0" class="form-control" disabled required/>
+							<input type="text" name="contrato_totalContrato" id="contrato_totalContrato" onkeyup="calcular()" class="form-control" readonly required/>
 						</div>
 					</div>
 					
@@ -387,6 +578,9 @@ function editar(id){
 					</div>
 					<div class="col-md-2 form-group" id="cancelar" style="display:none">
 						<input type="button" class="btn btn-danger" onclick="cancelar()" value="Voltar">
+					</div>
+					<div class="col-md-2 form-group" id="contrato" style="display:none">
+						<input type="button" class="btn btn-success" onclick="verContrato()" value="Ver Contrato">
 					</div>
 					<input type="hidden" id="acao" name="acao" value="salvar">
 				</div>
