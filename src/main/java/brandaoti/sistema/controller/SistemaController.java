@@ -192,8 +192,8 @@ public class SistemaController {
 				h.setEmail("teste@teste.com");
 				h.setSenha("587");
 				h.setNome("Henrique");
-				h.setTelefone("(11)9893-6271");
-				h.setCelular("(11)9893-6271");
+				h.setTelefone("(11)98931-6271");
+				h.setCelular("(11)98931-6271");
 				h.setEndereco("Teste...");
 				h.setCep("00000-000");
 				h.setBairro("Jd da Alegria");
@@ -209,8 +209,8 @@ public class SistemaController {
 				d.setEmail("teste@teste.com");
 				d.setSenha("123");
 				d.setNome("Douglas Clei");
-				d.setTelefone("(11)94344-8225");
-				d.setCelular("(11)94344-8225");
+				d.setTelefone("(11)99999-9999");
+				d.setCelular("(11)99999-9999");
 				d.setEndereco("Teste...");
 				d.setCep("00000-000");
 				d.setBairro("Jd da Alegria");
@@ -228,8 +228,8 @@ public class SistemaController {
 				r.setEmail("teste@teste.com");
 				r.setSenha("456");
 				r.setNome("Rafael");
-				r.setTelefone("(11)98359-8420");
-				r.setCelular("(11)98359-8420");
+				r.setTelefone("(11)99999-9999");
+				r.setCelular("(11)99999-9999");
 				r.setEndereco("Teste...");
 				r.setCep("00000-000");
 				r.setBairro("Jd da Alegria");
