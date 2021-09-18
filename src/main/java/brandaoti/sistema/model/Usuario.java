@@ -21,7 +21,7 @@ public class Usuario {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id; //Esse número é o ID automático gerado.
 	
-	@Column
+	@Column(unique=true, nullable = false)
 	private String matricula;
 	
 	@Column
@@ -34,11 +34,11 @@ public class Usuario {
 	//Você pode gerar o tamanho que desejar e se for obrigatório.
 	private String nome;
 	
-	@Column
+	@Column(unique=true, nullable = false)
 	//Você pode gerar o tamanho que desejar e se for obrigatório.
 	private String email;
 	
-	@Column
+	@Column(unique=true, nullable = false)
 	private String cpf;
 	
 	@Column
