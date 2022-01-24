@@ -1,13 +1,10 @@
 package brandaoti.sistema.controller;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,7 +12,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Random;
 
-import javax.persistence.Column;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,13 +22,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
 import brandaoti.sistema.dao.AulaDao;
 import brandaoti.sistema.dao.AvaliacaoDao;
@@ -107,7 +102,7 @@ public class SistemaController extends HttpServlet {
 		}
 		
 		@RequestMapping(value = {"/","/login"}, produces = "text/plain;charset=UTF-8", method = RequestMethod.GET) // Pagina de Vendas
-		public ModelAndView login(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "nome", required = false, defaultValue = "Henrique Brandão") String nome) throws SQLException { //Funcao e alguns valores que recebe...
+		public void login(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "nome", required = false, defaultValue = "Henrique Brandão") String nome) throws SQLException, ServletException, IOException { //Funcao e alguns valores que recebe...
 			//Caso não haja registros
 			HttpSession session = request.getSession();
 			List<Usuario> u = usuarioDao.buscarTudo();
@@ -254,9 +249,7 @@ public class SistemaController extends HttpServlet {
 			
 			
 			String link = "index";
-			String itemMenu = link;
-			ModelAndView modelAndView = new ModelAndView(link); //JSP que irÃ¡ acessar
-			return modelAndView; //retorna a variavel
+			request.getRequestDispatcher("/WEB-INF/jsp/"+link+".jsp").forward(request, response);
 		}
 		
 		@RequestMapping(value = "/deslogar", method = {RequestMethod.POST, RequestMethod.GET}) // Link que irÃ¡ acessar...
@@ -267,7 +260,7 @@ public class SistemaController extends HttpServlet {
 		}
 		
 		@RequestMapping(value = "/deletando", method = {RequestMethod.GET, RequestMethod.POST}) // Pagina de Alteração de Perfil
-		public ModelAndView deletando(HttpServletRequest request, HttpServletResponse response, String tabela,Integer id) { //Função e alguns valores que recebe...
+		public void deletando(HttpServletRequest request, HttpServletResponse response, String tabela,Integer id) throws ServletException, IOException { //Função e alguns valores que recebe...
 			HttpSession session = request.getSession();
 			Boolean logado = false;
 			String paginaAtual = "";
@@ -275,7 +268,7 @@ public class SistemaController extends HttpServlet {
 			String atualizarPagina = "";
 			String link = "pages/deslogar";
 			String itemMenu = link;
-			ModelAndView modelAndView = new ModelAndView(link); //JSP que irá acessar.
+			
 			Usuario usuarioSessao = new Usuario();
 			if(session.getAttribute("usuarioSessao") != null) {
 				usuarioSessao = (Usuario) session.getAttribute("usuarioSessao");
@@ -288,11 +281,11 @@ public class SistemaController extends HttpServlet {
 				iconePaginaAtual = "fa fa-user"; //Titulo do menuzinho.
 				link = "pages/alunos";
 				itemMenu = link;
-				modelAndView = new ModelAndView(link); //JSP que irá acessar.
+				
 				
 				//Caso esteja logado.
 				if(tabela.equals("usuario")) {
-					modelAndView = new ModelAndView(link);
+					
 					paginaAtual = "Alunos";
 					try {
 						List<Parcela> parcelas = parcelaDao.buscarCliente(""+id);
@@ -310,14 +303,14 @@ public class SistemaController extends HttpServlet {
 					objeto.setAtivo(false);
 					usuarioDao.save(objeto);
 					List<Usuario> usuarios = usuarioDao.buscarTudo();
-					modelAndView.addObject("usuarios", usuarios);
+					request.setAttribute("usuarios", usuarios);
 					List<Plano> planos = planoDao.buscarTudo();
-					modelAndView.addObject("planos", planos);
+					request.setAttribute("planos", planos);
 					atualizarPagina = "/alunos";
-					modelAndView.addObject("atualizarPagina", atualizarPagina);
+					request.setAttribute("atualizarPagina", atualizarPagina);
 				}
 				if(tabela.equals("funcionario")) {
-					modelAndView = new ModelAndView(link);
+					
 					paginaAtual = "Funcionários";
 					
 					try {
@@ -337,12 +330,12 @@ public class SistemaController extends HttpServlet {
 					objeto.setAtivo(false);
 					usuarioDao.save(objeto);
 					List<Usuario> usuarios = usuarioDao.buscarFuncionarios();
-					modelAndView.addObject("usuarios", usuarios);
+					request.setAttribute("usuarios", usuarios);
 					atualizarPagina = "/funcionarios";
-					modelAndView.addObject("atualizarPagina", atualizarPagina);
+					request.setAttribute("atualizarPagina", atualizarPagina);
 				}
 				if(tabela.equals("parcela")) {
-					modelAndView = new ModelAndView(link);
+					
 					paginaAtual = "Pendências";
 					Parcela objeto = parcelaDao.findById(id).get();
 					Contrato c = contratoDao.findById(objeto.getContrato().getId()).get();
@@ -355,13 +348,13 @@ public class SistemaController extends HttpServlet {
 						contratoDao.save(c);
 					}
 					List<Parcela> pendencias = parcelaDao.buscarPendencias();
-					modelAndView.addObject("pendencias", pendencias);
+					request.setAttribute("pendencias", pendencias);
 					atualizarPagina = "/pendencias";
-					modelAndView.addObject("atualizarPagina", atualizarPagina);
+					request.setAttribute("atualizarPagina", atualizarPagina);
 				}
 				if(tabela.equals("treino")) {
 					link = "pages/cadastrarTreinos";
-					modelAndView = new ModelAndView(link);
+					
 					paginaAtual = "Cadastrar Treinos";
 					Treino objeto = treinoDao.findById(id).get();
 					Usuario us = usuarioDao.buscarMatricula(objeto.getAluno().getMatricula());
@@ -369,44 +362,44 @@ public class SistemaController extends HttpServlet {
 					treinoDao.save(objeto);
 					try {
 						List<Treino> treinos = treinoDao.buscarMatricula(us.getMatricula());
-						modelAndView.addObject("treinos", treinos);
+						request.setAttribute("treinos", treinos);
 					} catch(Exception e) {
 						System.out.println("Erro: "+e);
 					}
-					modelAndView.addObject("usuario", us);
+					request.setAttribute("usuario", us);
 				}
 				if(tabela.equals("planos")) {
 					link = "pages/planos";
-					modelAndView = new ModelAndView(link);
+					
 					paginaAtual = "Cadastrar novo Plano";
 					Plano objeto = planoDao.findById(id).get();
 					objeto.setAtivo(false);
 					planoDao.save(objeto);
 					List<Plano> pl = planoDao.buscarTudo();
-					modelAndView.addObject("planos", pl);
+					request.setAttribute("planos", pl);
 				}
 				if(tabela.equals("avaliacao")) {
 					link = "pages/cadastrarAvaliacao";
-					modelAndView = new ModelAndView(link);
+					
 					paginaAtual = "Avaliação";
 					Avaliacao objeto = avaliacaoDao.findById(id).get();
 					objeto.setAtivo(false);
 					avaliacaoDao.save(objeto);
 					List<Avaliacao> pl = avaliacaoDao.buscarTudo();
-					modelAndView.addObject("avaliacao", pl);
+					request.setAttribute("avaliacao", pl);
 				}
 			}
-			modelAndView.addObject("usuario", usuarioSessao);
-			modelAndView.addObject("paginaAtual", paginaAtual); 
-			modelAndView.addObject("iconePaginaAtual", iconePaginaAtual);
-			return modelAndView; 
+			request.setAttribute("usuario", usuarioSessao);
+			request.setAttribute("paginaAtual", paginaAtual); 
+			request.setAttribute("iconePaginaAtual", iconePaginaAtual);
+			request.getRequestDispatcher("/WEB-INF/jsp/"+link+".jsp").forward(request, response); 
 		}
 		
 		
 		
 		/* SALVAR EXCEL */
 		@RequestMapping(value = "/upload/excel", method = {RequestMethod.POST, RequestMethod.GET}) // Pagina de Alteração de Perfil
-		public ModelAndView uploadExcel(HttpServletRequest request, HttpServletResponse response, Model model, String tabelaUsada, @ModelAttribute MultipartFile file) throws Exception, IOException { //Função e alguns valores que recebe...
+		public void uploadExcel(HttpServletRequest request, HttpServletResponse response, Model model, String tabelaUsada, @ModelAttribute MultipartFile file) throws Exception, IOException { //Função e alguns valores que recebe...
 			HttpSession session = request.getSession();
 			Boolean logado = false;
 			String paginaAtual = "";
@@ -414,7 +407,7 @@ public class SistemaController extends HttpServlet {
 			String iconePaginaAtual = ""; //Titulo do menuzinho.
 			String link = "pages/deslogar";
 			String itemMenu = link;
-			ModelAndView modelAndView = new ModelAndView(link); //JSP que irá acessar.
+			
 			Usuario usuarioSessao = new Usuario();
 			if(session.getAttribute("usuarioSessao") != null) {
 				usuarioSessao = (Usuario) session.getAttribute("usuarioSessao");
@@ -428,10 +421,10 @@ public class SistemaController extends HttpServlet {
 				iconePaginaAtual = "fa fa-user"; //Titulo do menuzinho.
 				link = "pages/home";
 				itemMenu = link;
-				modelAndView = new ModelAndView(link); //JSP que irá acessar.
-				modelAndView.addObject("usuario", usuarioSessao);
-				modelAndView.addObject("paginaAtual", paginaAtual); 
-				modelAndView.addObject("iconePaginaAtual", iconePaginaAtual);
+				
+				request.setAttribute("usuario", usuarioSessao);
+				request.setAttribute("paginaAtual", paginaAtual); 
+				request.setAttribute("iconePaginaAtual", iconePaginaAtual);
 				
 				//Caso esteja logado.
 				ProcessaExcel processaExcel = new ProcessaExcel();
@@ -443,7 +436,7 @@ public class SistemaController extends HttpServlet {
 				switch (tabelaUsada) {  
 				 case "aulas" : // CASO SEJA AULAS ---------------------
 					 	link = "pages/aulas";
-					 	modelAndView = new ModelAndView(link);
+					 	
 					 	paginaAtual = "Aulas";
 						iconePaginaAtual = "fa fa-user"; //Titulo do menuzinho.
 					 	try {
@@ -522,7 +515,7 @@ public class SistemaController extends HttpServlet {
 				   			System.out.println("Erro: "+ e);
 				   		}
 					 	List<Aula> aulas = aulaDao.buscarTudo();
-					 	modelAndView.addObject("aulas", aulas);
+					 	request.setAttribute("aulas", aulas);
 					 	List<Aula> h = aulaDao.buscarhorarios();
 					 	List<Horario> horarios = new ArrayList<Horario>();
 					 	String ultimoHorarioInicio = "";
@@ -537,17 +530,17 @@ public class SistemaController extends HttpServlet {
 					 			horarios.add(hr);
 					 		}
 					 	}
-					 	modelAndView.addObject("horarios", horarios);
+					 	request.setAttribute("horarios", horarios);
 					}
 			}
 			System.out.println("Validado");
-			return modelAndView; //retorna a variavel
+			request.getRequestDispatcher("/WEB-INF/jsp/"+link+".jsp").forward(request, response); 
 			
 		}
 		
 		
 		@RequestMapping(value = "/home", produces = "text/plain;charset=UTF-8", method = {RequestMethod.GET,RequestMethod.POST}) // Pagina de Vendas
-		public ModelAndView home(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "usuarioVal", defaultValue = "") String usuarioVal, @RequestParam(value = "senhaVal", defaultValue = "") String senhaVal) throws SQLException {
+		public void home(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "usuarioVal", defaultValue = "") String usuarioVal, @RequestParam(value = "senhaVal", defaultValue = "") String senhaVal) throws SQLException, ServletException, IOException {
 			HttpSession session = request.getSession();
 			Boolean logado = false;
 			String paginaAtual = "";
@@ -555,7 +548,7 @@ public class SistemaController extends HttpServlet {
 			String iconePaginaAtual = ""; //Titulo do menuzinho.
 			String link = "pages/deslogar";
 			String itemMenu = link;
-			ModelAndView modelAndView = new ModelAndView(link); //JSP que irá acessar.
+			
 			Usuario usuarioSessao = new Usuario();
 			if(session.getAttribute("usuarioSessao") != null) {
 				usuarioSessao = (Usuario) session.getAttribute("usuarioSessao");
@@ -588,10 +581,10 @@ public class SistemaController extends HttpServlet {
 				link = "pages/deslogar"; 
 			}
 			if(logado) {
-				modelAndView = new ModelAndView(link); //JSP que irá acessar.
-				modelAndView.addObject("usuario", usuarioSessao);
-				modelAndView.addObject("paginaAtual", paginaAtual); 
-				modelAndView.addObject("iconePaginaAtual", iconePaginaAtual);
+				
+				request.setAttribute("usuario", usuarioSessao);
+				request.setAttribute("paginaAtual", paginaAtual); 
+				request.setAttribute("iconePaginaAtual", iconePaginaAtual);
 				
 				if(usuarioSessao != null && usuarioSessao.getPerfil() != null && usuarioSessao.getPerfil().getAdmin()) {
 					Integer presentesOntem = presencaDao.presentesOntem().size();
@@ -657,28 +650,28 @@ public class SistemaController extends HttpServlet {
 						mNoite.setValor1(valStr);
 						mesesNoite.add(mNoite);
 					}
-					modelAndView.addObject("presentesOntem", presentesOntem);
-					modelAndView.addObject("todosAlunos", todosAlunos);
-					modelAndView.addObject("alunosPendentes", alunosPendentes);
-					modelAndView.addObject("alunosAniversariantes", alunosAniversariantes);
-					modelAndView.addObject("novosDoMes", novosDoMes);
-					modelAndView.addObject("mesesTodos", mesesTodos);
-					modelAndView.addObject("mesesManha", mesesManha);
-					modelAndView.addObject("mesesTarde", mesesTarde);
-					modelAndView.addObject("mesesNoite", mesesNoite);
+					request.setAttribute("presentesOntem", presentesOntem);
+					request.setAttribute("todosAlunos", todosAlunos);
+					request.setAttribute("alunosPendentes", alunosPendentes);
+					request.setAttribute("alunosAniversariantes", alunosAniversariantes);
+					request.setAttribute("novosDoMes", novosDoMes);
+					request.setAttribute("mesesTodos", mesesTodos);
+					request.setAttribute("mesesManha", mesesManha);
+					request.setAttribute("mesesTarde", mesesTarde);
+					request.setAttribute("mesesNoite", mesesNoite);
 				}
 				if(usuarioSessao != null && usuarioSessao.getPerfil() != null && !usuarioSessao.getPerfil().getAdmin()) {
 					List<Treino> treinos = treinoDao.buscarMatricula(usuarioSessao.getMatricula());
-					modelAndView.addObject("treinos", treinos);
+					request.setAttribute("treinos", treinos);
 				}
 				
 			}
-			return modelAndView; //retorna a variavel
+			request.getRequestDispatcher("/WEB-INF/jsp/"+link+".jsp").forward(request, response); 
 		}
 
 		
 		@RequestMapping(value = "/financeiro", produces = "text/plain;charset=UTF-8", method = {RequestMethod.GET,RequestMethod.POST}) // Pagina de Vendas
-		public ModelAndView financeiro(HttpServletRequest request, HttpServletResponse response) throws SQLException {
+		public void financeiro(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
 			HttpSession session = request.getSession();
 			Boolean logado = false;
 			String paginaAtual = "";
@@ -686,7 +679,7 @@ public class SistemaController extends HttpServlet {
 			String iconePaginaAtual = ""; //Titulo do menuzinho.
 			String link = "pages/deslogar";
 			String itemMenu = link;
-			ModelAndView modelAndView = new ModelAndView(link); //JSP que irá acessar.
+			
 			Usuario usuarioSessao = new Usuario();
 			if(session.getAttribute("usuarioSessao") != null) {
 				usuarioSessao = (Usuario) session.getAttribute("usuarioSessao");
@@ -699,10 +692,10 @@ public class SistemaController extends HttpServlet {
 				iconePaginaAtual = "fa fa-money"; //Titulo do menuzinho.
 				link = "pages/financeiro";
 				itemMenu = link;
-				modelAndView = new ModelAndView(link); //JSP que irá acessar.
-				modelAndView.addObject("usuario", usuarioSessao);
-				modelAndView.addObject("paginaAtual", paginaAtual); 
-				modelAndView.addObject("iconePaginaAtual", iconePaginaAtual);
+				
+				request.setAttribute("usuario", usuarioSessao);
+				request.setAttribute("paginaAtual", paginaAtual); 
+				request.setAttribute("iconePaginaAtual", iconePaginaAtual);
 				
 				if(usuarioSessao != null && usuarioSessao.getPerfil() != null && usuarioSessao.getPerfil().getAdmin()) {
 					Integer presentesOntem = presencaDao.presentesOntem().size();
@@ -771,25 +764,25 @@ public class SistemaController extends HttpServlet {
 						mNoite.setValor1(valStr);
 						mesesNoite.add(mNoite);
 					}
-					modelAndView.addObject("presentesOntem", presentesOntem);
-					modelAndView.addObject("todosAlunos", todosAlunos);
-					modelAndView.addObject("alunosPendentes", alunosPendentes);
-					modelAndView.addObject("alunosAniversariantes", alunosAniversariantes);
-					modelAndView.addObject("novosDoMes", novosDoMes);
-					modelAndView.addObject("mesesTodos", mesesTodos);
-					modelAndView.addObject("mesesManha", mesesManha);
-					modelAndView.addObject("mesesTarde", mesesTarde);
-					modelAndView.addObject("mesesNoite", mesesNoite);
+					request.setAttribute("presentesOntem", presentesOntem);
+					request.setAttribute("todosAlunos", todosAlunos);
+					request.setAttribute("alunosPendentes", alunosPendentes);
+					request.setAttribute("alunosAniversariantes", alunosAniversariantes);
+					request.setAttribute("novosDoMes", novosDoMes);
+					request.setAttribute("mesesTodos", mesesTodos);
+					request.setAttribute("mesesManha", mesesManha);
+					request.setAttribute("mesesTarde", mesesTarde);
+					request.setAttribute("mesesNoite", mesesNoite);
 				}
 				
 			}
-			return modelAndView; //retorna a variavel
+			request.getRequestDispatcher("/WEB-INF/jsp/"+link+".jsp").forward(request, response); 
 		}
 		
 		
 		
 		@RequestMapping(value = "/treino", produces = "text/plain;charset=UTF-8", method = {RequestMethod.GET,RequestMethod.POST}) // Pagina de Vendas
-		public ModelAndView treino(HttpServletRequest request, HttpServletResponse response, Integer proximo, Integer anterior) throws SQLException {
+		public void treino(HttpServletRequest request, HttpServletResponse response, Integer proximo, Integer anterior) throws SQLException, ServletException, IOException {
 			HttpSession session = request.getSession();
 			Boolean logado = false;
 			String paginaAtual = "";
@@ -797,7 +790,7 @@ public class SistemaController extends HttpServlet {
 			String iconePaginaAtual = ""; //Titulo do menuzinho.
 			String link = "pages/deslogar";
 			String itemMenu = link;
-			ModelAndView modelAndView = new ModelAndView(link); //JSP que irá acessar.
+			
 			Usuario usuarioSessao = new Usuario();
 			if(session.getAttribute("usuarioSessao") != null) {
 				usuarioSessao = (Usuario) session.getAttribute("usuarioSessao");
@@ -810,10 +803,10 @@ public class SistemaController extends HttpServlet {
 				iconePaginaAtual = "fa fa-edit"; //Titulo do menuzinho.
 				link = "pages/treino";
 				itemMenu = link;
-				modelAndView = new ModelAndView(link); //JSP que irá acessar.
-				modelAndView.addObject("usuario", usuarioSessao);
-				modelAndView.addObject("paginaAtual", paginaAtual); 
-				modelAndView.addObject("iconePaginaAtual", iconePaginaAtual);
+				
+				request.setAttribute("usuario", usuarioSessao);
+				request.setAttribute("paginaAtual", paginaAtual); 
+				request.setAttribute("iconePaginaAtual", iconePaginaAtual);
 				
 				String treinoSelecionado = "A";
 				if(proximo != null && proximo > 0) {
@@ -856,22 +849,22 @@ public class SistemaController extends HttpServlet {
 					}
 				}
 				
-				modelAndView.addObject("treinoSelecionado", treinoSelecionado);
-				modelAndView.addObject("treinos", treinos);
+				request.setAttribute("treinoSelecionado", treinoSelecionado);
+				request.setAttribute("treinos", treinos);
 			}
-			return modelAndView; //retorna a variavel
+			request.getRequestDispatcher("/WEB-INF/jsp/"+link+".jsp").forward(request, response); 
 		}
 		
 		
 		@RequestMapping(value = "/alunos", produces = "text/plain;charset=UTF-8", method = {RequestMethod.GET,RequestMethod.POST}) // Pagina de Vendas
-		public ModelAndView alunos(HttpServletRequest request, HttpServletResponse response, Usuario aluno, String acao, String contrato_obs, Integer contrato_vencimento, String contrato_inicio, String contrato_fim, String contrato_totalContrato, Double contrato_sinal, Double contrato_desconto, Double contrato_total, Integer contrato_parcelas, Double contrato_valorDaParcela) throws SQLException, ParseException {
+		public void alunos(HttpServletRequest request, HttpServletResponse response, Usuario aluno, String acao, String contrato_obs, Integer contrato_vencimento, String contrato_inicio, String contrato_fim, String contrato_totalContrato, Double contrato_sinal, Double contrato_desconto, Double contrato_total, Integer contrato_parcelas, Double contrato_valorDaParcela) throws SQLException, ParseException, ServletException, IOException {
 			HttpSession session = request.getSession();
 			Boolean logado = false;
 			String paginaAtual = "";
 			String iconePaginaAtual = ""; //Titulo do menuzinho.
 			String link = "pages/deslogar";
 			String itemMenu = link;
-			ModelAndView modelAndView = new ModelAndView(link); //JSP que irá acessar.
+			
 			Usuario usuarioSessao = new Usuario();
 			if(session.getAttribute("usuarioSessao") != null) {
 				usuarioSessao = (Usuario) session.getAttribute("usuarioSessao");
@@ -890,17 +883,17 @@ public class SistemaController extends HttpServlet {
 				iconePaginaAtual = "fa fa-user"; //Titulo do menuzinho.
 				link = "pages/alunos";
 				itemMenu = link;
-				modelAndView = new ModelAndView(link); //JSP que irá acessar.
+				
 				
 				List<Plano> planos = planoDao.buscarTudo();
-				modelAndView.addObject("planos", planos);			
-				modelAndView.addObject("usuario", usuarioSessao);
-				modelAndView.addObject("paginaAtual", paginaAtual); 
-				modelAndView.addObject("iconePaginaAtual", iconePaginaAtual);
+				request.setAttribute("planos", planos);			
+				request.setAttribute("usuario", usuarioSessao);
+				request.setAttribute("paginaAtual", paginaAtual); 
+				request.setAttribute("iconePaginaAtual", iconePaginaAtual);
 				
 				//Gerando matrícula aleatória
 				String matriculaPadrao = gerarMatricula();
-				modelAndView.addObject("matriculaPadrao", matriculaPadrao);
+				request.setAttribute("matriculaPadrao", matriculaPadrao);
 				
 				Boolean repetido = false;
 				if(usuarioDao.buscarAlunosRepetidos(aluno.getMatricula(), aluno.getCpf()).size() > 0) {
@@ -983,7 +976,7 @@ public class SistemaController extends HttpServlet {
 
 						
 					} catch(Exception e) {
-						modelAndView.addObject("erro", e);
+						request.setAttribute("erro", e);
 					}
 				} else if (aluno.getMatricula() != null && (acao.equals("atualizar")) && repetido){
 					Usuario a = usuarioDao.buscarMatricula(aluno.getMatricula());
@@ -1064,17 +1057,17 @@ public class SistemaController extends HttpServlet {
 						}
 					}
 				} else if(aluno.getMatricula() != null && (acao.equals("salvar")) && repetido) {
-					modelAndView.addObject("erro", "Já existe este CPF / Matrícula.");
+					request.setAttribute("erro", "Já existe este CPF / Matrícula.");
 				}
 				List<Usuario> usuarios = usuarioDao.buscarAlunos();
-				modelAndView.addObject("usuarios", usuarios);
+				request.setAttribute("usuarios", usuarios);
 			}
-			return modelAndView; //retorna a variavel
+			request.getRequestDispatcher("/WEB-INF/jsp/"+link+".jsp").forward(request, response); 
 		}
 		
 		
 		@RequestMapping(value = "/funcionarios", produces = "text/plain;charset=UTF-8", method = {RequestMethod.GET,RequestMethod.POST}) // Pagina de Vendas
-		public ModelAndView funcionarios(HttpServletRequest request, HttpServletResponse response, Usuario funcionario, String acao, String perfil_codigo) throws SQLException {
+		public void funcionarios(HttpServletRequest request, HttpServletResponse response, Usuario funcionario, String acao, String perfil_codigo) throws SQLException, ServletException, IOException {
 			HttpSession session = request.getSession();
 			Boolean logado = false;
 			String paginaAtual = "";
@@ -1082,7 +1075,7 @@ public class SistemaController extends HttpServlet {
 			String iconePaginaAtual = ""; //Titulo do menuzinho.
 			String link = "pages/deslogar";
 			String itemMenu = link;
-			ModelAndView modelAndView = new ModelAndView(link); //JSP que irá acessar.
+			
 			Usuario usuarioSessao = new Usuario();
 			if(session.getAttribute("usuarioSessao") != null) {
 				usuarioSessao = (Usuario) session.getAttribute("usuarioSessao");
@@ -1095,14 +1088,14 @@ public class SistemaController extends HttpServlet {
 				iconePaginaAtual = "fa fa-user"; //Titulo do menuzinho.
 				link = "pages/funcionarios";
 				itemMenu = link;
-				modelAndView = new ModelAndView(link); //JSP que irá acessar.
-				modelAndView.addObject("usuario", usuarioSessao);
-				modelAndView.addObject("paginaAtual", paginaAtual); 
-				modelAndView.addObject("iconePaginaAtual", iconePaginaAtual);
+				
+				request.setAttribute("usuario", usuarioSessao);
+				request.setAttribute("paginaAtual", paginaAtual); 
+				request.setAttribute("iconePaginaAtual", iconePaginaAtual);
 				
 				//Gerando matrícula aleatória
 				String matriculaPadrao = gerarMatricula();
-				modelAndView.addObject("matriculaPadrao", matriculaPadrao);
+				request.setAttribute("matriculaPadrao", matriculaPadrao);
 				
 				Boolean repetido = false;
 				if(usuarioDao.buscarFuncionariosRepetidos(funcionario.getMatricula(), funcionario.getCpf()).size() > 0) {
@@ -1116,9 +1109,9 @@ public class SistemaController extends HttpServlet {
 						a.setSenha(funcionario.getCpf().replace(".", "").replace("-", ""));
 						a.setPerfil(perfilDao.buscarCodigo(perfil_codigo));
 						usuarioDao.save(a);
-						modelAndView.addObject("atualizarPagina", atualizarPagina);
+						request.setAttribute("atualizarPagina", atualizarPagina);
 					} catch(Exception e) {
-						modelAndView.addObject("erro", e);
+						request.setAttribute("erro", e);
 						System.out.println("Erro: "+e);
 					}
 				} else if (funcionario.getMatricula() != null && (acao.equals("atualizar")) && repetido){
@@ -1138,18 +1131,18 @@ public class SistemaController extends HttpServlet {
 					a.setPerfil(perfilDao.buscarCodigo(perfil_codigo));
 					usuarioDao.save(a);
 				} else if(funcionario.getMatricula() != null && (acao.equals("salvar")) && repetido) {
-					modelAndView.addObject("erro", "Já existe este CPF / Matrícula.");
+					request.setAttribute("erro", "Já existe este CPF / Matrícula.");
 				}
 				List<Usuario> usuarios = usuarioDao.buscarFuncionarios();
-				modelAndView.addObject("usuarios", usuarios);
+				request.setAttribute("usuarios", usuarios);
 				
 			}
-			return modelAndView; //retorna a variavel
+			request.getRequestDispatcher("/WEB-INF/jsp/"+link+".jsp").forward(request, response); 
 		}
 		
 		
 		@RequestMapping(value = "/aulas", produces = "text/plain;charset=UTF-8", method = {RequestMethod.GET,RequestMethod.POST}) // Pagina de Vendas
-		public ModelAndView aulas(HttpServletRequest request, HttpServletResponse response) throws SQLException {
+		public void aulas(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
 			HttpSession session = request.getSession();
 			Boolean logado = false;
 			String paginaAtual = "";
@@ -1157,7 +1150,7 @@ public class SistemaController extends HttpServlet {
 			String iconePaginaAtual = ""; //Titulo do menuzinho.
 			String link = "pages/deslogar";
 			String itemMenu = link;
-			ModelAndView modelAndView = new ModelAndView(link); //JSP que irá acessar.
+			
 			Usuario usuarioSessao = new Usuario();
 			if(session.getAttribute("usuarioSessao") != null) {
 				usuarioSessao = (Usuario) session.getAttribute("usuarioSessao");
@@ -1170,14 +1163,14 @@ public class SistemaController extends HttpServlet {
 				iconePaginaAtual = "fa fa-user"; //Titulo do menuzinho.
 				link = "pages/aulas";
 				itemMenu = link;
-				modelAndView = new ModelAndView(link); //JSP que irá acessar.
-				modelAndView.addObject("usuario", usuarioSessao);
-				modelAndView.addObject("paginaAtual", paginaAtual); 
-				modelAndView.addObject("iconePaginaAtual", iconePaginaAtual);
+				
+				request.setAttribute("usuario", usuarioSessao);
+				request.setAttribute("paginaAtual", paginaAtual); 
+				request.setAttribute("iconePaginaAtual", iconePaginaAtual);
 				
 				//Caso esteja logado.
 				List<Aula> aulas = aulaDao.buscarTudo();
-			 	modelAndView.addObject("aulas", aulas);
+			 	request.setAttribute("aulas", aulas);
 			 	List<Aula> h = aulaDao.buscarhorarios();
 			 	List<Horario> horarios = new ArrayList<Horario>();
 			 	String ultimoHorarioInicio = "";
@@ -1192,15 +1185,15 @@ public class SistemaController extends HttpServlet {
 			 			horarios.add(hr);
 			 		}
 			 	}
-			 	modelAndView.addObject("horarios", horarios);
+			 	request.setAttribute("horarios", horarios);
 				
 			}
-			return modelAndView; //retorna a variavel
+			request.getRequestDispatcher("/WEB-INF/jsp/"+link+".jsp").forward(request, response); 
 		}
 		
 		
 		@RequestMapping(value = "/pendencias", produces = "text/plain;charset=UTF-8", method = {RequestMethod.GET,RequestMethod.POST}) // Pagina de Vendas
-		public ModelAndView pendencias(HttpServletRequest request, HttpServletResponse response, String acao, String cpf) throws SQLException {
+		public void pendencias(HttpServletRequest request, HttpServletResponse response, String acao, String cpf) throws SQLException, ServletException, IOException {
 			HttpSession session = request.getSession();
 			Boolean logado = false;
 			String paginaAtual = "";
@@ -1208,7 +1201,7 @@ public class SistemaController extends HttpServlet {
 			String iconePaginaAtual = ""; //Titulo do menuzinho.
 			String link = "pages/deslogar";
 			String itemMenu = link;
-			ModelAndView modelAndView = new ModelAndView(link); //JSP que irá acessar.
+			
 			Usuario usuarioSessao = new Usuario();
 			if(session.getAttribute("usuarioSessao") != null) {
 				usuarioSessao = (Usuario) session.getAttribute("usuarioSessao");
@@ -1221,33 +1214,33 @@ public class SistemaController extends HttpServlet {
 				iconePaginaAtual = "fa fa-money"; //Titulo do menuzinho.
 				link = "pages/pendencias";
 				itemMenu = link;
-				modelAndView = new ModelAndView(link); //JSP que irá acessar.
-				modelAndView.addObject("usuario", usuarioSessao);
-				modelAndView.addObject("paginaAtual", paginaAtual); 
-				modelAndView.addObject("iconePaginaAtual", iconePaginaAtual);
+				
+				request.setAttribute("usuario", usuarioSessao);
+				request.setAttribute("paginaAtual", paginaAtual); 
+				request.setAttribute("iconePaginaAtual", iconePaginaAtual);
 				
 				if(usuarioSessao != null && usuarioSessao.getPerfil() != null && usuarioSessao.getPerfil().getAdmin()) {
 					if(acao == null) {
 						List<Parcela> pendencias = parcelaDao.buscarPendencias();
-						modelAndView.addObject("pendencias", pendencias);
+						request.setAttribute("pendencias", pendencias);
 					} else {
 						if(acao.equals("pesquisar")) {
 							List<Parcela> pendencias = parcelaDao.buscarMatricula(cpf);
-							modelAndView.addObject("pendencias", pendencias);
+							request.setAttribute("pendencias", pendencias);
 						}
 					}
 				} else {
 					List<Parcela> pendencias = parcelaDao.buscarMatricula(usuarioSessao.getCpf());
-					modelAndView.addObject("pendencias", pendencias);
+					request.setAttribute("pendencias", pendencias);
 				}
-				modelAndView.addObject("usuario", usuarioSessao);
+				request.setAttribute("usuario", usuarioSessao);
 			}
-			return modelAndView; //retorna a variavel
+			request.getRequestDispatcher("/WEB-INF/jsp/"+link+".jsp").forward(request, response); 
 		}
 		
 		
 		@RequestMapping(value = "/aniversariantes", produces = "text/plain;charset=UTF-8", method = {RequestMethod.GET,RequestMethod.POST}) // Pagina de Vendas
-		public ModelAndView aniversariantes(HttpServletRequest request, HttpServletResponse response) throws SQLException {
+		public void aniversariantes(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
 			HttpSession session = request.getSession();
 			Boolean logado = false;
 			String paginaAtual = "";
@@ -1255,7 +1248,7 @@ public class SistemaController extends HttpServlet {
 			String iconePaginaAtual = ""; //Titulo do menuzinho.
 			String link = "pages/deslogar";
 			String itemMenu = link;
-			ModelAndView modelAndView = new ModelAndView(link); //JSP que irá acessar.
+			
 			Usuario usuarioSessao = new Usuario();
 			if(session.getAttribute("usuarioSessao") != null) {
 				usuarioSessao = (Usuario) session.getAttribute("usuarioSessao");
@@ -1268,21 +1261,21 @@ public class SistemaController extends HttpServlet {
 				iconePaginaAtual = "fa fa-user"; //Titulo do menuzinho.
 				link = "pages/aniversariantes";
 				itemMenu = link;
-				modelAndView = new ModelAndView(link); //JSP que irá acessar.
-				modelAndView.addObject("usuario", usuarioSessao);
-				modelAndView.addObject("paginaAtual", paginaAtual); 
-				modelAndView.addObject("iconePaginaAtual", iconePaginaAtual);
+				
+				request.setAttribute("usuario", usuarioSessao);
+				request.setAttribute("paginaAtual", paginaAtual); 
+				request.setAttribute("iconePaginaAtual", iconePaginaAtual);
 				
 				//Caso esteja logado.
 				List<Usuario> usuarios = usuarioDao.buscarAniversariantes();
-				modelAndView.addObject("usuarios", usuarios);
+				request.setAttribute("usuarios", usuarios);
 			}
-			return modelAndView; //retorna a variavel
+			request.getRequestDispatcher("/WEB-INF/jsp/"+link+".jsp").forward(request, response); 
 		}
 		
 		
 		@RequestMapping(value = "/presencaAlunos", produces = "text/plain;charset=UTF-8", method = {RequestMethod.GET,RequestMethod.POST}) // Pagina de Vendas
-		public ModelAndView presencaAlunos(HttpServletRequest request, HttpServletResponse response ) throws SQLException {
+		public void presencaAlunos(HttpServletRequest request, HttpServletResponse response ) throws SQLException, ServletException, IOException {
 			HttpSession session = request.getSession();
 			Boolean logado = false;
 			String paginaAtual = "";
@@ -1290,7 +1283,7 @@ public class SistemaController extends HttpServlet {
 			String iconePaginaAtual = ""; //Titulo do menuzinho.
 			String link = "pages/deslogar";
 			String itemMenu = link;
-			ModelAndView modelAndView = new ModelAndView(link); //JSP que irá acessar.
+			
 			Usuario usuarioSessao = new Usuario();
 			if(session.getAttribute("usuarioSessao") != null) {
 				usuarioSessao = (Usuario) session.getAttribute("usuarioSessao");
@@ -1303,10 +1296,10 @@ public class SistemaController extends HttpServlet {
 				iconePaginaAtual = "fa fa-user"; //Titulo do menuzinho.
 				link = "pages/presencaAlunos";
 				itemMenu = link;
-				modelAndView = new ModelAndView(link); //JSP que irá acessar.
-				modelAndView.addObject("usuario", usuarioSessao);
-				modelAndView.addObject("paginaAtual", paginaAtual); 
-				modelAndView.addObject("iconePaginaAtual", iconePaginaAtual);
+				
+				request.setAttribute("usuario", usuarioSessao);
+				request.setAttribute("paginaAtual", paginaAtual); 
+				request.setAttribute("iconePaginaAtual", iconePaginaAtual);
 				
 				GregorianCalendar calendar = new GregorianCalendar();
 				int ano = calendar.get(GregorianCalendar.YEAR);
@@ -1345,18 +1338,18 @@ public class SistemaController extends HttpServlet {
 				//Caso esteja logado.
 				List<Usuario> usuarios = usuarioDao.buscarAlunos();
 				List<Presenca> presenca = presencaDao.buscarMesAlunos();
-				modelAndView.addObject("usuarios", usuarios);
-				modelAndView.addObject("presenca", presenca);
-				modelAndView.addObject("ano", ano);
-				modelAndView.addObject("mes", mesStr);
-				modelAndView.addObject("dias", dias);
+				request.setAttribute("usuarios", usuarios);
+				request.setAttribute("presenca", presenca);
+				request.setAttribute("ano", ano);
+				request.setAttribute("mes", mesStr);
+				request.setAttribute("dias", dias);
 			}
-			return modelAndView; //retorna a variavel
+			request.getRequestDispatcher("/WEB-INF/jsp/"+link+".jsp").forward(request, response); 
 		}
 		
 		
 		@RequestMapping(value = "/presencaFuncionarios", produces = "text/plain;charset=UTF-8", method = {RequestMethod.GET,RequestMethod.POST}) // Pagina de Vendas
-		public ModelAndView presencaFuncionarios(HttpServletRequest request, HttpServletResponse response) throws SQLException {
+		public void presencaFuncionarios(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
 			HttpSession session = request.getSession();
 			Boolean logado = false;
 			String paginaAtual = "";
@@ -1364,7 +1357,7 @@ public class SistemaController extends HttpServlet {
 			String iconePaginaAtual = ""; //Titulo do menuzinho.
 			String link = "pages/deslogar";
 			String itemMenu = link;
-			ModelAndView modelAndView = new ModelAndView(link); //JSP que irá acessar.
+			
 			Usuario usuarioSessao = new Usuario();
 			if(session.getAttribute("usuarioSessao") != null) {
 				usuarioSessao = (Usuario) session.getAttribute("usuarioSessao");
@@ -1377,10 +1370,10 @@ public class SistemaController extends HttpServlet {
 				iconePaginaAtual = "fa fa-user"; //Titulo do menuzinho.
 				link = "pages/presencaFuncionarios";
 				itemMenu = link;
-				modelAndView = new ModelAndView(link); //JSP que irá acessar.
-				modelAndView.addObject("usuario", usuarioSessao);
-				modelAndView.addObject("paginaAtual", paginaAtual); 
-				modelAndView.addObject("iconePaginaAtual", iconePaginaAtual);
+				
+				request.setAttribute("usuario", usuarioSessao);
+				request.setAttribute("paginaAtual", paginaAtual); 
+				request.setAttribute("iconePaginaAtual", iconePaginaAtual);
 				
 				GregorianCalendar calendar = new GregorianCalendar();
 				int ano = calendar.get(GregorianCalendar.YEAR);
@@ -1418,19 +1411,19 @@ public class SistemaController extends HttpServlet {
 				
 				List<Usuario> usuarios = usuarioDao.buscarFuncionarios();
 				List<Presenca> presenca = presencaDao.buscarMesFuncionarios();
-				modelAndView.addObject("usuarios", usuarios);
-				modelAndView.addObject("presenca", presenca);
-				modelAndView.addObject("ano", ano);
-				modelAndView.addObject("mes", mesStr);
-				modelAndView.addObject("dias", dias);
+				request.setAttribute("usuarios", usuarios);
+				request.setAttribute("presenca", presenca);
+				request.setAttribute("ano", ano);
+				request.setAttribute("mes", mesStr);
+				request.setAttribute("dias", dias);
 				
 			}
-			return modelAndView; //retorna a variavel
+			request.getRequestDispatcher("/WEB-INF/jsp/"+link+".jsp").forward(request, response); 
 		}
 		
 		
 		@RequestMapping(value = "/cadastrarTreinos", produces = "text/plain;charset=UTF-8", method = {RequestMethod.GET,RequestMethod.POST}) // Pagina de Vendas
-		public ModelAndView cadastrarTreinos(HttpServletRequest request, HttpServletResponse response, Integer salvar,String matricula, String vlrTreinoA,String vlrTreinoB,String vlrTreinoC,String vlrTreinoD,String vlrTreinoE,String vlrTreinoF,String vlrTreinoG) throws SQLException {
+		public void cadastrarTreinos(HttpServletRequest request, HttpServletResponse response, Integer salvar,String matricula, String vlrTreinoA,String vlrTreinoB,String vlrTreinoC,String vlrTreinoD,String vlrTreinoE,String vlrTreinoF,String vlrTreinoG) throws SQLException, ServletException, IOException {
 			HttpSession session = request.getSession();
 			Boolean logado = false;
 			String paginaAtual = "";
@@ -1438,7 +1431,7 @@ public class SistemaController extends HttpServlet {
 			String iconePaginaAtual = ""; //Titulo do menuzinho.
 			String link = "pages/deslogar";
 			String itemMenu = link;
-			ModelAndView modelAndView = new ModelAndView(link); //JSP que irá acessar.
+			
 			Usuario usuarioSessao = new Usuario();
 			if(session.getAttribute("usuarioSessao") != null) {
 				usuarioSessao = (Usuario) session.getAttribute("usuarioSessao");
@@ -1451,10 +1444,10 @@ public class SistemaController extends HttpServlet {
 				iconePaginaAtual = "fa fa-user"; //Titulo do menuzinho.
 				link = "pages/cadastrarTreinos";
 				itemMenu = link;
-				modelAndView = new ModelAndView(link); //JSP que irá acessar.
-				modelAndView.addObject("usuario", usuarioSessao);
-				modelAndView.addObject("paginaAtual", paginaAtual); 
-				modelAndView.addObject("iconePaginaAtual", iconePaginaAtual);
+				
+				request.setAttribute("usuario", usuarioSessao);
+				request.setAttribute("paginaAtual", paginaAtual); 
+				request.setAttribute("iconePaginaAtual", iconePaginaAtual);
 				
 				//... Salvando dados.
 				if(salvar != null) {
@@ -1521,21 +1514,21 @@ public class SistemaController extends HttpServlet {
 					Usuario u = new Usuario();
 					try {
 						u = usuarioDao.buscarMatricula(matricula);
-						modelAndView.addObject("usuarioAlterar", u);
-						modelAndView.addObject("matricula", matricula);
+						request.setAttribute("usuarioAlterar", u);
+						request.setAttribute("matricula", matricula);
 					} catch(Exception e) {}
 					try {
 						List<Treino> treinos = treinoDao.buscarMatricula(u.getMatricula());
-						modelAndView.addObject("treinos", treinos);
+						request.setAttribute("treinos", treinos);
 					} catch(Exception e) {}
 				}
 			}
-			return modelAndView; //retorna a variavel
+			request.getRequestDispatcher("/WEB-INF/jsp/"+link+".jsp").forward(request, response); 
 		}
 		
 		
 		@RequestMapping(value = "/planos", produces = "text/plain;charset=UTF-8", method = {RequestMethod.GET,RequestMethod.POST}) // Pagina de Vendas
-		public ModelAndView planos(HttpServletRequest request, HttpServletResponse response, String acao, Plano plano) throws SQLException {
+		public void planos(HttpServletRequest request, HttpServletResponse response, String acao, Plano plano) throws SQLException, ServletException, IOException {
 			HttpSession session = request.getSession();
 			Boolean logado = false;
 			String paginaAtual = "";
@@ -1543,7 +1536,7 @@ public class SistemaController extends HttpServlet {
 			String iconePaginaAtual = ""; //Titulo do menuzinho.
 			String link = "pages/deslogar";
 			String itemMenu = link;
-			ModelAndView modelAndView = new ModelAndView(link); //JSP que irá acessar.
+			
 			Usuario usuarioSessao = new Usuario();
 			if(session.getAttribute("usuarioSessao") != null) {
 				usuarioSessao = (Usuario) session.getAttribute("usuarioSessao");
@@ -1556,10 +1549,10 @@ public class SistemaController extends HttpServlet {
 				iconePaginaAtual = "fa fa-user"; //Titulo do menuzinho.
 				link = "pages/planos";
 				itemMenu = link;
-				modelAndView = new ModelAndView(link); //JSP que irá acessar.
-				modelAndView.addObject("usuario", usuarioSessao);
-				modelAndView.addObject("paginaAtual", paginaAtual); 
-				modelAndView.addObject("iconePaginaAtual", iconePaginaAtual);
+				
+				request.setAttribute("usuario", usuarioSessao);
+				request.setAttribute("paginaAtual", paginaAtual); 
+				request.setAttribute("iconePaginaAtual", iconePaginaAtual);
 				
 				//... Salvando dados.
 				if(acao != null) {
@@ -1576,13 +1569,13 @@ public class SistemaController extends HttpServlet {
 				}
 				atualizarPagina = "/planos";
 				List<Plano> planos = planoDao.buscarTudo();
-				modelAndView.addObject("planos", planos);
+				request.setAttribute("planos", planos);
 			}
-			return modelAndView; //retorna a variavel
+			request.getRequestDispatcher("/WEB-INF/jsp/"+link+".jsp").forward(request, response); 
 		}
 		
 		@RequestMapping(value = "/alterarSenha", produces = "text/plain;charset=UTF-8", method = {RequestMethod.GET,RequestMethod.POST}) // Pagina de Vendas
-		public ModelAndView alterarSenha(HttpServletRequest request, HttpServletResponse response, Integer acao, String matricula,String senha,String novaSenha,String confirmaSenha) throws SQLException {
+		public void alterarSenha(HttpServletRequest request, HttpServletResponse response, Integer acao, String matricula,String senha,String novaSenha,String confirmaSenha) throws SQLException, ServletException, IOException {
 			HttpSession session = request.getSession();
 			Boolean logado = false;
 			String paginaAtual = "";
@@ -1590,7 +1583,7 @@ public class SistemaController extends HttpServlet {
 			String iconePaginaAtual = ""; //Titulo do menuzinho.
 			String link = "pages/deslogar";
 			String itemMenu = link;
-			ModelAndView modelAndView = new ModelAndView(link); //JSP que irá acessar.
+			
 			Usuario usuarioSessao = new Usuario();
 			if(session.getAttribute("usuarioSessao") != null) {
 				usuarioSessao = (Usuario) session.getAttribute("usuarioSessao");
@@ -1603,10 +1596,10 @@ public class SistemaController extends HttpServlet {
 				iconePaginaAtual = "fa fa-key"; //Titulo do menuzinho.
 				link = "pages/alterarSenha";
 				itemMenu = link;
-				modelAndView = new ModelAndView(link); //JSP que irá acessar.
-				modelAndView.addObject("usuario", usuarioSessao);
-				modelAndView.addObject("paginaAtual", paginaAtual); 
-				modelAndView.addObject("iconePaginaAtual", iconePaginaAtual);
+				
+				request.setAttribute("usuario", usuarioSessao);
+				request.setAttribute("paginaAtual", paginaAtual); 
+				request.setAttribute("iconePaginaAtual", iconePaginaAtual);
 				
 				String msg = "";
 				//... Salvando dados.
@@ -1617,19 +1610,19 @@ public class SistemaController extends HttpServlet {
 							u.setSenha(novaSenha);
 							usuarioDao.save(u);
 							msg = "Alterado com sucesso.";
-							modelAndView.addObject("msgOk", msg);
+							request.setAttribute("msgOk", msg);
 						} else {
 							msg = "Usuário ou senha inválidos.";
-							modelAndView.addObject("msg", msg);
+							request.setAttribute("msg", msg);
 						}
 					}
 				}
 			}
-			return modelAndView; //retorna a variavel
+			request.getRequestDispatcher("/WEB-INF/jsp/"+link+".jsp").forward(request, response); 
 		}
 		
 		@RequestMapping(value = "/avaliacao", produces = "text/plain;charset=UTF-8", method = {RequestMethod.GET,RequestMethod.POST}) // Pagina de Vendas
-		public ModelAndView avaliacao(HttpServletRequest request, HttpServletResponse response, Integer acao, String matricula) throws SQLException {
+		public void avaliacao(HttpServletRequest request, HttpServletResponse response, Integer acao, String matricula) throws SQLException, ServletException, IOException {
 			HttpSession session = request.getSession();
 			Boolean logado = false;
 			String paginaAtual = "";
@@ -1637,7 +1630,7 @@ public class SistemaController extends HttpServlet {
 			String iconePaginaAtual = ""; //Titulo do menuzinho.
 			String link = "pages/deslogar";
 			String itemMenu = link;
-			ModelAndView modelAndView = new ModelAndView(link); //JSP que irá acessar.
+			
 			Usuario usuarioSessao = new Usuario();
 			if(session.getAttribute("usuarioSessao") != null) {
 				usuarioSessao = (Usuario) session.getAttribute("usuarioSessao");
@@ -1650,23 +1643,23 @@ public class SistemaController extends HttpServlet {
 				iconePaginaAtual = "fa fa-user"; //Titulo do menuzinho.
 				link = "pages/avaliacao";
 				itemMenu = link;
-				modelAndView = new ModelAndView(link); //JSP que irá acessar.
-				modelAndView.addObject("usuario", usuarioSessao);
-				modelAndView.addObject("paginaAtual", paginaAtual); 
-				modelAndView.addObject("iconePaginaAtual", iconePaginaAtual);
+				
+				request.setAttribute("usuario", usuarioSessao);
+				request.setAttribute("paginaAtual", paginaAtual); 
+				request.setAttribute("iconePaginaAtual", iconePaginaAtual);
 				
 				// Carregando a tela...
 				try {
 					List<Avaliacao> avaliacao = avaliacaoDao.buscarMatricula(usuarioSessao.getMatricula());
 					System.out.println("Size(): " + avaliacao.size());
-					modelAndView.addObject("avaliacao", avaliacao);
+					request.setAttribute("avaliacao", avaliacao);
 				} catch(Exception e) {System.out.println("Erro: " + e);}
 			}
-			return modelAndView; //retorna a variavel
+			request.getRequestDispatcher("/WEB-INF/jsp/"+link+".jsp").forward(request, response); 
 		}
 		
 		@RequestMapping(value = "/cadastrarAvaliacao", produces = "text/plain;charset=UTF-8", method = {RequestMethod.GET,RequestMethod.POST}) // Pagina de Vendas
-		public ModelAndView cadastrarAvaliacao(HttpServletRequest request, HttpServletResponse response, Integer acao, String matricula, Avaliacao av, String inicio_avaliacao, String fim_avaliacao) throws SQLException, ParseException {
+		public void cadastrarAvaliacao(HttpServletRequest request, HttpServletResponse response, Integer acao, String matricula, Avaliacao av, String inicio_avaliacao, String fim_avaliacao) throws SQLException, ParseException, ServletException, IOException {
 			HttpSession session = request.getSession();
 			Boolean logado = false;
 			String paginaAtual = "";
@@ -1674,7 +1667,7 @@ public class SistemaController extends HttpServlet {
 			String iconePaginaAtual = ""; //Titulo do menuzinho.
 			String link = "pages/deslogar";
 			String itemMenu = link;
-			ModelAndView modelAndView = new ModelAndView(link); //JSP que irá acessar.
+			
 			Usuario usuarioSessao = new Usuario();
 			if(session.getAttribute("usuarioSessao") != null) {
 				usuarioSessao = (Usuario) session.getAttribute("usuarioSessao");
@@ -1687,10 +1680,10 @@ public class SistemaController extends HttpServlet {
 				iconePaginaAtual = "fa fa-user"; //Titulo do menuzinho.
 				link = "pages/cadastrarAvaliacao";
 				itemMenu = link;
-				modelAndView = new ModelAndView(link); //JSP que irá acessar.
-				modelAndView.addObject("usuario", usuarioSessao);
-				modelAndView.addObject("paginaAtual", paginaAtual); 
-				modelAndView.addObject("iconePaginaAtual", iconePaginaAtual);
+				
+				request.setAttribute("usuario", usuarioSessao);
+				request.setAttribute("paginaAtual", paginaAtual); 
+				request.setAttribute("iconePaginaAtual", iconePaginaAtual);
 				
 				//... Salvando dados.
 				if(acao != null) {
@@ -1773,26 +1766,26 @@ public class SistemaController extends HttpServlet {
 						a.setAvaliador(usuarioSessao);
 						avaliacaoDao.save(a);
 						List<Avaliacao> avaliacao = avaliacaoDao.buscarMatricula(matricula);
-						modelAndView.addObject("avaliacao", avaliacao);
+						request.setAttribute("avaliacao", avaliacao);
 					} else {
 						List<Avaliacao> avaliacao = avaliacaoDao.buscarMatricula(matricula);
-						modelAndView.addObject("avaliacao", avaliacao);
+						request.setAttribute("avaliacao", avaliacao);
 					}
 				} else {
 					List<Avaliacao> avaliacao = avaliacaoDao.buscarMatricula(matricula);
-					modelAndView.addObject("avaliacao", avaliacao);
+					request.setAttribute("avaliacao", avaliacao);
 				}
 				// Carregando a tela...
 				if(matricula != null && !matricula.equals("")) {
 					Usuario u = new Usuario();
 					try {
 						u = usuarioDao.buscarMatricula(matricula);
-						modelAndView.addObject("usuarioAlterar", u);
-						modelAndView.addObject("matricula", matricula);
+						request.setAttribute("usuarioAlterar", u);
+						request.setAttribute("matricula", matricula);
 					} catch(Exception e) {}
 				}
 			}
-			return modelAndView; //retorna a variavel
+			request.getRequestDispatcher("/WEB-INF/jsp/"+link+".jsp").forward(request, response); 
 		}
 		
 }
