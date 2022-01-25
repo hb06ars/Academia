@@ -38,6 +38,15 @@
 		<!-- Head Libs -->
 		<script src="/assets/vendor/modernizr/modernizr.js"></script>
 	</head>
+	
+	<style>
+		body {
+		 background-image: url("/assets/images/fundo_bkg.png");
+		 background-color: white;
+		 background-repeat: no-repeat;
+		 background-position: center;
+		}
+	</style>
 	<body>
 	
 	    <!-- screen loader -->
