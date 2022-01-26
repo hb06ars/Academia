@@ -209,7 +209,7 @@ public class SistemaController extends HttpServlet {
 				d.setCpf("11122233344");
 				d.setEmail("teste2@teste.com");
 				d.setSenha("123");
-				d.setNome("Douglas Clei");
+				d.setNome("Douglas");
 				d.setTelefone("(11)99999-9999");
 				d.setCelular("(11)99999-9999");
 				d.setEndereco("Teste...");
@@ -218,7 +218,7 @@ public class SistemaController extends HttpServlet {
 				d.setBairro("São Paulo");
 				d.setEstado("SP");
 				d.setPerfil(perfilDao.buscarProfessor().get(0));
-				d.setPathImagem("https://instagram.fcgh11-1.fna.fbcdn.net/v/t51.2885-19/s150x150/121259006_145932033910851_5986443377023843247_n.jpg?_nc_ht=instagram.fcgh11-1.fna.fbcdn.net&_nc_ohc=K7QuPMx_HTsAX9F8mer&tp=1&oh=4f66c284e537eb8c6a37a16ecfa2d339&oe=605329B4");
+				d.setPathImagem("https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/2048px-User_icon_2.svg.png");
 				usuarioDao.save(d);
 				
 				// Rafael
@@ -236,7 +236,7 @@ public class SistemaController extends HttpServlet {
 				r.setBairro("Jd da Alegria");
 				r.setBairro("São Paulo");
 				r.setEstado("SP");
-				r.setPathImagem("https://instagram.fcgh11-1.fna.fbcdn.net/v/t51.2885-19/s150x150/147640101_432656427934162_7502532548051698688_n.jpg?_nc_ht=instagram.fcgh11-1.fna.fbcdn.net&_nc_ohc=1AwA0-HsIfEAX_ePNx8&tp=1&oh=c494c72522c18470b00e66fa92c9e1b7&oe=6052EE90");
+				r.setPathImagem("https://ksarquitetos.com.br/wp-content/uploads/2014/12/user.png");
 				r.setPerfil(perfilDao.buscarProfessor().get(0));
 				usuarioDao.save(r);
 				
