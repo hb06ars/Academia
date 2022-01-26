@@ -190,8 +190,8 @@ public class SistemaController extends HttpServlet {
 				h.setAtivo(true);
 				h.setMatricula("587");
 				h.setCpf("22233344455");
-				h.setEmail("hb06ars@hotmail.com");
-				h.setSenha("kzdut");
+				h.setEmail("adm@adm.com");
+				h.setSenha("adm");
 				h.setNome("Henrique");
 				h.setTelefone("(11)98931-6271");
 				h.setCelular("(11)98931-6271");
