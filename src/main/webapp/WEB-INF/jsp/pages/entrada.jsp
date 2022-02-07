@@ -57,7 +57,8 @@ var request = null;
       alert("Erro na requisição.");
   }
   
-function getDigital(digital) {
+function getDigital() {
+	var digital = document.getElementById("matricula").value;
 	createRequest();
 	var url = "/entrada_{"+digital+"}";
 	request.open("POST", url, true);
@@ -91,8 +92,10 @@ function json_Digital(json) {
 	//Fechar mensagem
 	setTimeout(function() {
 		$('.close').click(); 
+		document.getElementById("matricula").value = '';
+		document.getElementById("matricula").focus();
 		document.getElementById("labelMsg").innerHTML = '<br>Insira a sua digital abaixo:';
-		document.getElementById("icone").innerHTML = '<br><br><br><br>';
+		document.getElementById("icone").innerHTML = '<img src="assets/images/user.png" style="min-width:200px; min-height:200px; max-width:200px;max-height:200px;align:center;border-radius:50%;" class="card-img-center">';
 		}, 2000);
 	
 	
@@ -109,17 +112,27 @@ function json_Digital(json) {
 	  <div class="row" style="padding-top:50px">
 	    <div class="col-12 col-sm-12 align-self-center">
 	      	<div class="card text-center">
-			  <div style="padding-top:20px">
+			  <div id="icone" style="padding-top:20px">
 			  	<img src="assets/images/user.png" style="min-width:200px; min-height:200px; max-width:200px;max-height:200px;align:center;border-radius:50%;" class="card-img-center">
 			  </div>
 			  <div class="card-body">
+			    <!-- 
 			    <h3 class="card-title text-center">BEM-VINDO!</h3>
 			    <h4 id="labelMsg" class="card-text text-center"><br>Insira a sua digital abaixo:</h4>
-			    
 			    
 			    <span onclick="getDigital('123')" id="digital" class="card">
 			    	<span id="icone"> <br><br><br><br> </span>
 			    </span>
+			     -->
+			     
+			    <h3 class="card-title text-center">BEM-VINDO!</h3>
+			    <h4 id="labelMsg" class="card-text text-center"><br>Insira a sua matrícula:</h4>
+			    <span id="digital">
+			    	<input autofocus type="number" id="matricula" name="matricula" class="form-control  text-center" placeholder="Matrícula" />
+			    	<br>
+			    	<button style="width:50%" onclick="getDigital()" type="button" class="btn btn-primary" data-dismiss="modal">Entrar</button>
+			    </span>
+			    
 			    
 			  </div>
 			</div>
