@@ -12,7 +12,7 @@ import brandaoti.sistema.model.Treino;
 import brandaoti.sistema.model.Usuario;
 
 
-public interface PresencaDao extends JpaRepository<Plano, Integer> {
+public interface PresencaDao extends JpaRepository<Presenca, Integer> {
 	
 	@Query(" select p from Presenca p order by presenca asc")
 	List<Presenca> buscarTudoAlunos();
@@ -41,5 +41,9 @@ public interface PresencaDao extends JpaRepository<Plano, Integer> {
 	
 	@Query(" select p from Presenca p where extract(month from presenca) = :mes and YEAR(presenca)=(YEAR(NOW())) and hour(presenca) between 18 and 23")
 	List<Presenca> presentesMesNoite(@Param("mes") Integer mes);
+	
+	
+	@Query(" select p from Presenca p where DAY(presenca)=(DAY(NOW())) and YEAR(presenca)=(YEAR(NOW())) and usuario.perfil.aluno = TRUE and usuario = :usuario order by presenca asc")
+	List<Presenca> presencaAluno(@Param("usuario") Usuario usuario);
 	
 }

@@ -44,7 +44,11 @@ public interface UsuarioDao extends JpaRepository<Usuario, Integer> {
 	@Query(" select p from Usuario p where extract(month from dataDeCadastro) = extract(month from sysdate) and ativo = TRUE and YEAR(dataDeCadastro)=(YEAR(NOW())) ")
 	List<Usuario> novosDoMes();
 	
+	@Query(" select u from Usuario u where 1=1 and u.perfil.aluno = TRUE and u.ativo = TRUE and u.perfil.admin = FALSE and u.perfil.funcionario = FALSE ")
+	List<Usuario> buscarAlunosNaoFuncionarios();
 	
+	@Query(" select u from Usuario u where 1=1 and u.hashDigital like :hashDigital ")
+	Usuario buscarDigital(@Param("hashDigital") String hashDigital);
 	
 	
 }

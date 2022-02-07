@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -12,6 +13,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Random;
 
+import javax.security.auth.message.callback.PrivateKeyCallback.Request;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -239,6 +242,28 @@ public class SistemaController extends HttpServlet {
 				r.setPathImagem("https://ksarquitetos.com.br/wp-content/uploads/2014/12/user.png");
 				r.setPerfil(perfilDao.buscarProfessor().get(0));
 				usuarioDao.save(r);
+				
+				
+				// Rafael
+				Usuario a = new Usuario();
+				a.setAtivo(true);
+				a.setMatricula("343");
+				a.setCpf("22332222111");
+				a.setEmail("teste4@teste.com");
+				a.setSenha("343");
+				a.setNome("Aluno Teste");
+				a.setTelefone("(11)99999-9999");
+				a.setCelular("(11)99999-9999");
+				a.setEndereco("Teste...");
+				a.setCep("00000-000");
+				a.setBairro("Jd da Alegria");
+				a.setBairro("São Paulo");
+				a.setEstado("SP");
+				a.setPathImagem("https://ksarquitetos.com.br/wp-content/uploads/2014/12/user.png");
+				a.setHashDigital("123");
+				a.setPerfil(perfilDao.buscarSomenteAluno().get(0));
+				a.setPlano(planoDao.findAll().get(0));
+				usuarioDao.save(a);
 				
 				//al.setPerfil(perfilDao.buscarSomenteAluno().get(0));
 				//usuarioDao.save(al);
@@ -1786,6 +1811,64 @@ public class SistemaController extends HttpServlet {
 				}
 			}
 			request.getRequestDispatcher("/WEB-INF/jsp/"+link+".jsp").forward(request, response); 
+		}
+		
+		
+		
+		@RequestMapping(value = {"/entrada"}, produces = "text/plain;charset=UTF-8", method = {RequestMethod.GET}) // Pagina de Vendas
+		public void entrada(HttpServletRequest request, HttpServletResponse response) throws SQLException, ParseException, ServletException, IOException {
+			HttpSession session = request.getSession();
+			String link = "pages/entrada";
+			request.getRequestDispatcher("/WEB-INF/jsp/"+link+".jsp").forward(request, response); 
+		}
+		
+		
+		
+		@RequestMapping(value = "/entrada_{digital}", produces = "text/plain;charset=UTF-8", method = {RequestMethod.POST}) // Pagina de Vendas
+		public String entrada_post(HttpServletRequest request, HttpServletResponse response, @PathVariable("digital") String digital) throws SQLException, ParseException, ServletException, IOException {
+			digital = digital.replace("{", "");
+			digital = digital.replace("}", "");
+			
+			HttpSession session = request.getSession();
+			String link = "pages/entrada";
+			String msg =  "Usuário não cadastrado.";
+			//LEITURA DA DIGITAL
+				if (digital != null && !digital.equals("")) {
+					Usuario u = new Usuario();
+					try {
+						u = usuarioDao.buscarDigital(digital);
+						Boolean liberado = false;
+						if(u.getId() != null && !u.getPerfil().getAdmin() && !u.getPerfil().getFuncionario() && !u.getPerfil().getProfessor()) {
+							if(presencaDao.presencaAluno(u).size() == 0 || u.getPlano().getRepetir()) {
+								presencaDao.presencaAluno(u);
+								Presenca p = new Presenca();
+								p.setDataPresenca(LocalDate.now().atStartOfDay());
+								p.setPresenca(LocalDateTime.now());
+								p.setUsuario(u);
+								presencaDao.save(p);
+								liberado = true;
+								msg =  "Bem-Vindo "+u.getNome()+"!";
+							} else {
+								System.out.println("Ja veio");
+								msg = "Você já veio hoje.";
+							}
+						} else {
+							liberado = true;
+							msg =  "Bem-Vindo "+u.getNome()+"!";
+						}
+						
+						if(liberado) {
+							//LIBERAR A CATRACA
+						}
+						
+					} catch(Exception e) {
+						System.out.println("Erro: "+e);
+					}
+					if(u == null || u.getId() == null) {
+						msg =  "Usuário não cadastrado.";
+					}
+				}
+				return msg;
 		}
 		
 }

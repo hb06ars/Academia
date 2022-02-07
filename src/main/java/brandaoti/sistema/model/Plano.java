@@ -27,6 +27,9 @@ public class Plano {
 	
 	@Column
 	private Double valor;
+	
+	@Column
+	private Boolean repetir = false; //Se verdadeiro, você pode ir várias vezes na academia no mesmo dia.
 
 	public Integer getId() {
 		return id;
@@ -74,6 +77,14 @@ public class Plano {
 
 	public void setValor(Double valor) {
 		this.valor = valor;
+	}
+
+	public Boolean getRepetir() {
+		return repetir;
+	}
+
+	public void setRepetir(Boolean repetir) {
+		this.repetir = repetir;
 	}
 
 	

@@ -108,6 +108,10 @@
 											<i class="fa fa-home" aria-hidden="true"></i>
 											<span>Home</span>
 										</a>
+										<a href="/entrada">
+											<i class="fa fa-check" aria-hidden="true"></i>
+											<span>Entrada</span>
+										</a>
 										</c:if>
 									</li>
 									<li>

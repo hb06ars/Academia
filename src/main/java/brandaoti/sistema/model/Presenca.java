@@ -1,5 +1,6 @@
 package brandaoti.sistema.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -17,7 +18,10 @@ public class Presenca {
 	private Integer id; //Esse número é o ID automático gerado.
 	
 	@Column
-	private LocalDateTime presenca;
+	private LocalDateTime dataPresenca = LocalDate.now().atStartOfDay();
+	
+	@Column
+	private LocalDateTime presenca = LocalDateTime.now();
 	
 	@OneToOne
 	private Usuario usuario;
@@ -44,6 +48,14 @@ public class Presenca {
 
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
+	}
+
+	public LocalDateTime getDataPresenca() {
+		return dataPresenca;
+	}
+
+	public void setDataPresenca(LocalDateTime dataPresenca) {
+		this.dataPresenca = dataPresenca;
 	}
 
 	

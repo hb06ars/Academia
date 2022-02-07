@@ -21,6 +21,9 @@ public class Usuario {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id; //Esse número é o ID automático gerado.
 	
+	@Column(unique=true)
+	private String hashDigital; // Hash para leitura da digital.
+	
 	@Column(unique=true, nullable = false)
 	private String matricula;
 	
@@ -250,6 +253,14 @@ public class Usuario {
 
 	public void setDataDeCadastro(Date dataDeCadastro) {
 		this.dataDeCadastro = dataDeCadastro;
+	}
+
+	public String getHashDigital() {
+		return hashDigital;
+	}
+
+	public void setHashDigital(String hashDigital) {
+		this.hashDigital = hashDigital;
 	}
 	
 	
